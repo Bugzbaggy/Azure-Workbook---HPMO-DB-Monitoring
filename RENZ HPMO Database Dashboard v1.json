@@ -1,0 +1,2179 @@
+{
+  "properties": {
+    "lenses": {
+      "0": {
+        "order": 0,
+        "parts": {
+          "0": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "colSpan": 2,
+              "rowSpan": 2
+            },
+            "metadata": {
+              "inputs": [],
+              "type": "Extension/HubsExtension/PartType/ClockPart",
+              "settings": {
+                "content": {
+                  "timezoneId": "W. Europe Standard Time",
+                  "timeFormat": "HH:mm",
+                  "version": 1
+                }
+              }
+            }
+          },
+          "1": {
+            "position": {
+              "x": 2,
+              "y": 0,
+              "colSpan": 2,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"AlertsManagementResources | where type =~ 'microsoft.alertsmanagement/alerts'\\r\\n| where (properties.context.sourceType in~ (\\\"SQLDataBase\\\", \\\"SAPHanaDatabase\\\")) or (name contains \\\"[Linux] Aplication disk is running out of space\\\") or (name contains \\\"[Windows] Aplication disk is running out of space\\\") or (name contains \\\"Warning High CPU Utilization\\\") or (name contains \\\"Warning Virtual Memory Utilization is High\\\") or (name contains \\\"VM is not responding\\\") or (name contains \\\"[SQL] Database Corruption Detection\\\")\\r\\n//| where properties.context.sourceType in~ (\\\"SQLDataBase\\\", \\\"SAPHanaDatabase\\\")\\r\\n| where todatetime(properties.essentials.startDateTime) {timeRange}\\r\\n//| where properties.essentials.description !in (\\\"Log chain is broken.\\\",\\\"Log Chain is broken.\\\",\\\"First full backup is missing for this datasource.\\\")  \\r\\n| where \\\"*\\\" in ({ResourceGroups}) or properties.essentials.targetResourceGroup in~ ({ResourceGroups})\\r\\n| where \\\"*\\\" in ({ResourceTypes}) or properties.essentials.targetResourceType in~ ({ResourceTypes})\\r\\n| where \\\"*\\\" in ({Resources}) or properties.essentials.targetResource in~ ({Resources})\\r\\n| where \\\"*\\\" in ({AlertCondition}) or properties.essentials.monitorCondition in~ ({AlertCondition})\\r\\n//| where (properties.essentials.description !contains \\\"SQL database does not exist\\\")\\r\\n| where (properties.essentials.description !contains \\\"Log chain is broken\\\")\\r\\n| where (properties.essentials.description !contains \\\"Failed to connect to HANA system\\\")\\r\\n| where (properties.essentials.description !contains \\\"First full backup is missing for this datasource\\\")\\r\\n| where (properties.essentials.description !contains  \\\"Operation cancelled as a conflicting operation was already running on the same datasource\\\")\\r\\n| where (properties.essentials.description !contains  \\\"Backup failed because a remedial backup is in progress for this datasource. Backups on this datasource will not succeed until the remedial backup is complete\\\")\\r\\n//| where (properties.essentials.description !contains  \\\"Operation failed because Azure Backup workload extension could not connect to required Azure endpoints due to DNS resolution failures\\\")\\r\\n| extend State=tostring(properties.essentials.alertState)\\r\\n| where \\\"*\\\" in ({State}) or State in ({State})\\r\\n| extend Computer = properties.context.context.condition.allOf[0].dimensions[0].value\\r\\n| extend AffectedServer1 = properties.context.affectedItems\\r\\n//| where AffectedServer has \\\"azsapddb05\\\"\\r\\n| parse AffectedServer1 with * \\\"virtualMachines/\\\" AffectedServer1 \\\"/\\\" *\\r\\n| extend AffectedServer = coalesce(AffectedServer1, Computer)\\r\\n| where (AffectedServer contains \\\"db\\\") or (AffectedServer in~ (\\\"azsapd003\\\",\\\"azsapd007\\\",\\\"azsapd035\\\",\\\"azsapd039\\\",\\\"azsapd041\\\",\\\"dkcdcsapp076\\\",\\\"dkcdcsapd082\\\",\\\"\\\"))\\r\\n| summarize Count=count(), New=countif(State==\\\"New\\\"), \\r\\nAcknowledged=countif(State==\\\"Acknowledged\\\"), \\r\\nClosed=countif(State==\\\"Closed\\\") \\r\\nby Severity=tostring(properties.essentials.severity)\\r\\n| order by Severity asc\\r\\n//| summarize count() by State=tostring(properties.essentials.alertState)\",\"size\":4,\"title\":\"Alerts Summary\",\"color\":\"redBright\",\"noDataMessage\":\"No alerts found\",\"noDataMessageStyle\":3,\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\",\"crossComponentResources\":[\"{Subscription}\"],\"visualization\":\"piechart\",\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"AlertId\",\"formatter\":5,\"formatOptions\":{\"linkTarget\":\"Resource\"}},{\"columnMatch\":\"StartTime\",\"formatter\":6},{\"columnMatch\":\"Severity\",\"formatter\":11},{\"columnMatch\":\"State\",\"formatter\":1},{\"columnMatch\":\"Name\",\"formatter\":1,\"formatOptions\":{\"linkTarget\":\"OpenBlade\",\"linkIsContextBlade\":true,\"bladeOpenContext\":{\"bladeName\":\"AlertDetailsTemplateBlade\",\"extensionName\":\"Microsoft_Azure_Monitoring\",\"bladeParameters\":[{\"name\":\"alertId\",\"source\":\"column\",\"value\":\"AlertId\"},{\"name\":\"alertName\",\"source\":\"column\",\"value\":\"Name\"},{\"name\":\"invokedFrom\",\"source\":\"static\",\"value\":\"Workbooks\"}]}},\"tooltipFormat\":{\"tooltip\":\"View alert details\"}},{\"columnMatch\":\"TargetResource\",\"formatter\":13,\"formatOptions\":{\"linkTarget\":\"Resource\",\"subTarget\":\"alerts\",\"showIcon\":true}},{\"columnMatch\":\"essentials\",\"formatter\":5,\"formatOptions\":{\"linkTarget\":\"CellDetails\",\"linkIsContextBlade\":true}}],\"rowLimit\":1000},\"tileSettings\":{\"titleContent\":{\"columnMatch\":\"Severity\",\"formatter\":1},\"leftContent\":{\"columnMatch\":\"Count\",\"formatter\":12,\"formatOptions\":{\"palette\":\"coldHot\"},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"decimal\",\"maximumFractionDigits\":2,\"maximumSignificantDigits\":3}}},\"showBorder\":true,\"sortCriteriaField\":\"Severity\",\"sortOrderField\":1,\"size\":\"auto\"},\"graphSettings\":{\"type\":0,\"topContent\":{\"columnMatch\":\"Severity\",\"formatter\":1},\"centerContent\":{\"columnMatch\":\"Count\",\"formatter\":1,\"numberFormat\":{\"unit\":17,\"options\":{\"maximumSignificantDigits\":3,\"maximumFractionDigits\":2}}}},\"chartSettings\":{\"showMetrics\":false,\"seriesLabelSettings\":[{\"seriesName\":\"Sev3\",\"color\":\"blue\"},{\"seriesName\":\"Sev0\",\"color\":\"red\"},{\"seriesName\":\"Sev1\",\"color\":\"orange\"},{\"seriesName\":\"Sev2\",\"color\":\"yellow\"},{\"seriesName\":\"Sev4\",\"color\":\"blueDark\"}]}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "alert",
+                      "formattedValue": "alert"
+                    },
+                    "Subscription": {
+                      "type": 6,
+                      "value": [
+                        "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563",
+                        "/subscriptions/ceb84c3b-0fe0-4a8f-8461-b949ac7d27ae",
+                        "/subscriptions/2e7fbbca-efeb-4041-a2ae-03e312623775",
+                        "/subscriptions/ce5302c7-4de2-4fab-affe-786447c1684c",
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Subscriptions",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563','/subscriptions/ceb84c3b-0fe0-4a8f-8461-b949ac7d27ae','/subscriptions/2e7fbbca-efeb-4041-a2ae-03e312623775','/subscriptions/ce5302c7-4de2-4fab-affe-786447c1684c','/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79','/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d','/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a'"
+                    },
+                    "ResourceGroups": {
+                      "type": 2,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Resource groups",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'*'"
+                    },
+                    "ResourceTypes": {
+                      "type": 7,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Resource types",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'*'"
+                    },
+                    "Resources": {
+                      "type": 5,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Resources",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'*'"
+                    },
+                    "timeRange": {
+                      "type": 4,
+                      "value": {
+                        "durationMs": 2592000000
+                      },
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "Last 30 days",
+                      "displayName": "Time Range",
+                      "formattedValue": "Last 30 days"
+                    },
+                    "State": {
+                      "type": 2,
+                      "value": [
+                        "New",
+                        "Acknowledged"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "New, Acknowledged",
+                      "displayName": "State",
+                      "formattedValue": "'New','Acknowledged'"
+                    },
+                    "AlertCondition": {
+                      "type": 2,
+                      "value": [
+                        "Fired"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "Fired",
+                      "displayName": "AlertCondition",
+                      "formattedValue": "'Fired'"
+                    },
+                    "Severity": {
+                      "value": [
+                        "Sev2",
+                        "Sev1"
+                      ],
+                      "type": 1,
+                      "formattedValue": "\"Sev2\",\"Sev1\"",
+                      "labelValue": "\"Sev2\",\"Sev1\""
+                    },
+                    "tab": {
+                      "type": 1,
+                      "value": "details",
+                      "formattedValue": "details"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "2": {
+            "position": {
+              "x": 4,
+              "y": 0,
+              "colSpan": 20,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "azure monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "azure monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "azure monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"AlertsManagementResources | where type =~ 'microsoft.alertsmanagement/alerts'\\r\\n| where (properties.context.sourceType in~ (\\\"SQLDataBase\\\", \\\"SAPHanaDatabase\\\")) or (name contains \\\"[Linux] Aplication disk is running out of space\\\") or (name contains \\\"[Windows] Aplication disk is running out of space\\\") or (name contains \\\"Warning High CPU Utilization\\\") or (name contains \\\"Warning Virtual Memory Utilization is High\\\") or (name contains \\\"VM is not responding\\\") or (name contains \\\"[SQL] Database Corruption Detection\\\")\\r\\n//| where name contains \\\"Warning Virtual Memory Utilization is High\\\"\\r\\n| where todatetime(properties.essentials.startDateTime) {timeRange}  \\r\\n| extend Severity=tostring(properties.essentials.severity)\\r\\n| where Severity in ({Severity}) or Severity contains \\\"Sev\\\"\\r\\n| extend State=tostring(properties.essentials.alertState)\\r\\n| where \\\"*\\\" in ({State}) or State in ({State})\\r\\n| where \\\"*\\\" in ({ResourceTypes}) or properties.essentials.targetResourceType in~ ({ResourceTypes})\\r\\n| where \\\"*\\\" in ({ResourceGroups}) or properties.essentials.targetResourceGroup in~ ({ResourceGroups})\\r\\n| where \\\"*\\\" in ({Resources}) or properties.essentials.targetResource in~ ({Resources})\\r\\n| where \\\"*\\\" in ({AlertCondition}) or properties.essentials.monitorCondition in~ ({AlertCondition})\\r\\n//| where (properties.essentials.description !contains \\\"SQL database does not exist\\\")\\r\\n| where (properties.essentials.description !contains \\\"Log chain is broken\\\")\\r\\n| where (properties.essentials.description !contains \\\"Failed to connect to HANA system\\\")\\r\\n| where (properties.essentials.description !contains \\\"First full backup is missing for this datasource\\\")\\r\\n| where (properties.essentials.description !contains  \\\"Operation cancelled as a conflicting operation was already running on the same datasource\\\")\\r\\n| where (properties.essentials.description !contains  \\\"Backup failed because a remedial backup is in progress for this datasource. Backups on this datasource will not succeed until the remedial backup is complete\\\")\\r\\n//| where (properties.essentials.description !contains  \\\"Operation failed because Azure Backup workload extension could not connect to required Azure endpoints due to DNS resolution failures\\\")\\r\\n| extend Computer = properties.context.context.condition.allOf[0].dimensions[0].value\\r\\n| extend AffectedServer1 = properties.context.affectedItems\\r\\n//| where AffectedServer has \\\"azsapddb05\\\"\\r\\n| parse AffectedServer1 with * \\\"virtualMachines/\\\" AffectedServer1 \\\"/\\\" *\\r\\n| project AlertId=id, StartTime=todatetime(tostring(properties.essentials.startDateTime)), Severity, State=tostring(properties.essentials.alertState), AlertName=name, AffectedServer = coalesce(AffectedServer1, Computer), Description=tostring(properties.essentials.description)\\r\\n| where (AffectedServer contains \\\"db\\\") or (AffectedServer in~ (\\\"azsapd003\\\",\\\"azsapd007\\\",\\\"azsapd035\\\",\\\"azsapd039\\\",\\\"azsapd041\\\",\\\"dkcdcsapp076\\\",\\\"dkcdcsapd082\\\",\\\"\\\"))\\r\\n| order by StartTime desc\\r\\n\",\"size\":0,\"title\":\"Active Alerts\",\"noDataMessage\":\"No alerts found\",\"noDataMessageStyle\":3,\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\",\"crossComponentResources\":[\"{Subscription}\"],\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"AlertId\",\"formatter\":5,\"formatOptions\":{\"linkTarget\":\"Resource\"}},{\"columnMatch\":\"StartTime\",\"formatter\":6},{\"columnMatch\":\"Severity\",\"formatter\":11},{\"columnMatch\":\"State\",\"formatter\":1},{\"columnMatch\":\"Name\",\"formatter\":1,\"formatOptions\":{\"linkTarget\":\"OpenBlade\",\"linkIsContextBlade\":true,\"bladeOpenContext\":{\"bladeName\":\"AlertDetailsTemplateBlade\",\"extensionName\":\"Microsoft_Azure_Monitoring\",\"bladeParameters\":[{\"name\":\"alertId\",\"source\":\"column\",\"value\":\"AlertId\"},{\"name\":\"alertName\",\"source\":\"column\",\"value\":\"Name\"},{\"name\":\"invokedFrom\",\"source\":\"static\",\"value\":\"Workbooks\"}]}},\"tooltipFormat\":{\"tooltip\":\"View alert details\"}},{\"columnMatch\":\"Description\",\"formatter\":0,\"formatOptions\":{\"customColumnWidthSetting\":\"130ch\"}},{\"columnMatch\":\"TargetResource\",\"formatter\":13,\"formatOptions\":{\"linkTarget\":\"Resource\",\"subTarget\":\"alerts\",\"showIcon\":true}},{\"columnMatch\":\"essentials\",\"formatter\":5,\"formatOptions\":{\"linkTarget\":\"CellDetails\",\"linkIsContextBlade\":true}}],\"rowLimit\":1000,\"filter\":true}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "alert",
+                      "formattedValue": "alert"
+                    },
+                    "Subscription": {
+                      "type": 6,
+                      "value": [
+                        "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563",
+                        "/subscriptions/ceb84c3b-0fe0-4a8f-8461-b949ac7d27ae",
+                        "/subscriptions/2e7fbbca-efeb-4041-a2ae-03e312623775",
+                        "/subscriptions/ce5302c7-4de2-4fab-affe-786447c1684c",
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Subscriptions",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563','/subscriptions/ceb84c3b-0fe0-4a8f-8461-b949ac7d27ae','/subscriptions/2e7fbbca-efeb-4041-a2ae-03e312623775','/subscriptions/ce5302c7-4de2-4fab-affe-786447c1684c','/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79','/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d','/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a'"
+                    },
+                    "ResourceGroups": {
+                      "type": 2,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Resource groups",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'*'"
+                    },
+                    "ResourceTypes": {
+                      "type": 7,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Resource types",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'*'"
+                    },
+                    "Resources": {
+                      "type": 5,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Resources",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'*'"
+                    },
+                    "timeRange": {
+                      "type": 4,
+                      "value": {
+                        "durationMs": 2592000000
+                      },
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "Last 30 days",
+                      "displayName": "Time Range",
+                      "formattedValue": "Last 30 days"
+                    },
+                    "State": {
+                      "type": 2,
+                      "value": [
+                        "New",
+                        "Acknowledged"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "New, Acknowledged",
+                      "displayName": "State",
+                      "formattedValue": "'New','Acknowledged'"
+                    },
+                    "AlertCondition": {
+                      "type": 2,
+                      "value": [
+                        "Fired"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "Fired",
+                      "displayName": "AlertCondition",
+                      "formattedValue": "'Fired'"
+                    },
+                    "Severity": {
+                      "value": [
+                        "Sev2",
+                        "Sev1",
+                        "Sev0"
+                      ],
+                      "type": 1,
+                      "formattedValue": "\"Sev2\",\"Sev1\",\"Sev0\"",
+                      "labelValue": "\"Sev2\",\"Sev1\",\"Sev0\""
+                    },
+                    "tab": {
+                      "type": 1,
+                      "value": "details",
+                      "formattedValue": "details"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "3": {
+            "position": {
+              "x": 0,
+              "y": 2,
+              "colSpan": 2,
+              "rowSpan": 2
+            },
+            "metadata": {
+              "inputs": [],
+              "type": "Extension/HubsExtension/PartType/ClockPart",
+              "settings": {
+                "content": {
+                  "timezoneId": "Current",
+                  "timeFormat": "HH:mm",
+                  "version": 1
+                }
+              }
+            }
+          },
+          "4": {
+            "position": {
+              "x": 2,
+              "y": 3,
+              "colSpan": 2,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "queryInputs",
+                  "value": {
+                    "query": {
+                      "subscriptions": [
+                        "2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                        "3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                      ],
+                      "managementGroups": [],
+                      "levels": [
+                        "1",
+                        "2",
+                        "3",
+                        "4"
+                      ],
+                      "timeSpan": "1",
+                      "startTime": "2023-01-23T06:31:29.826Z",
+                      "endTime": "2023-01-24T06:31:29.826Z",
+                      "resourceGroupId": "all",
+                      "resourceId": "all",
+                      "resourceTypes": [],
+                      "operationNames": [],
+                      "caller": "all",
+                      "category": "all",
+                      "searchString": "",
+                      "tenantLevel": false,
+                      "tenantResourceProvider": "",
+                      "queryName": "Activity Log"
+                    }
+                  },
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_Azure_ActivityLog/PartType/ActivityLogQuerySummaryPart"
+            }
+          },
+          "5": {
+            "position": {
+              "x": 0,
+              "y": 4,
+              "colSpan": 1,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceId",
+                  "isOptional": true
+                },
+                {
+                  "name": "subscriptions",
+                  "value": [],
+                  "isOptional": true
+                },
+                {
+                  "name": "resourceGroupsNames",
+                  "value": [],
+                  "isOptional": true
+                },
+                {
+                  "name": "resourceNames",
+                  "value": [],
+                  "isOptional": true
+                },
+                {
+                  "name": "resourceTypes",
+                  "value": [],
+                  "isOptional": true
+                },
+                {
+                  "name": "severity",
+                  "value": [],
+                  "isOptional": true
+                },
+                {
+                  "name": "alertCondition",
+                  "value": [
+                    "Fired"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "userResponses",
+                  "value": [
+                    "New",
+                    "Acknowledged"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "monitorServices",
+                  "value": [],
+                  "isOptional": true
+                },
+                {
+                  "name": "timeRange",
+                  "value": {
+                    "timeRangeOptions": "30d",
+                    "customDateTimeRange": null
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "queryContains",
+                  "isOptional": true
+                },
+                {
+                  "name": "queryInputs",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_Azure_Monitoring_Alerts/PartType/AlertsSummaryBladePinnedPart",
+              "deepLink": "#view/Microsoft_Azure_Monitoring/AzureMonitoringBrowseBlade/~/alertsV2"
+            }
+          },
+          "6": {
+            "position": {
+              "x": 1,
+              "y": 4,
+              "colSpan": 3,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"recoveryservicesresources\\r\\n| where type == \\\"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\\\"\\r\\n| where properties.dataSourceInfo.datasourceType in~ ('SQLDatabase','SAPHanaDatabase')\\r\\n//| where properties.protectedItemType == 'AzureVmWorkloadSQLDatabase'\\r\\n| where properties.policyInfo.name in~  ('CorePolicy-SQL', 'CorePolicy-HANA')\\r\\n| project properties.serverName, name, properties.policyInfo.name, Status=properties.protectedItemHealthStatus, properties.lastBackupTime\\r\\n| summarize Total=count() by tostring(Status)\",\"size\":4,\"title\":\"SQL & SAP HANA\",\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\",\"crossComponentResources\":[\"/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a\",\"/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d\",\"/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79\"],\"visualization\":\"tiles\",\"tileSettings\":{\"titleContent\":{\"formatter\":1},\"leftContent\":{\"columnMatch\":\"Status\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"colors\",\"thresholdsGrid\":[{\"operator\":\"contains\",\"thresholdValue\":\"Healthy\",\"representation\":\"green\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Unhealthy\",\"representation\":\"redBright\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"NotReachable\",\"representation\":\"gray\",\"text\":\"{0}{1}\"},{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":\"blue\",\"text\":\"{0}{1}\"}]},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"decimal\",\"maximumFractionDigits\":2,\"maximumSignificantDigits\":3}}},\"rightContent\":{\"columnMatch\":\"Total\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"colors\",\"thresholdsGrid\":[{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":null,\"text\":\"{0}{1}\"}]}},\"showBorder\":false,\"size\":\"full\"}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "backup",
+                      "formattedValue": "backup"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "7": {
+            "position": {
+              "x": 4,
+              "y": 4,
+              "colSpan": 3,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"recoveryservicesresources\\r\\n                | where type in~ ('microsoft.recoveryservices/vaults/backupjobs')\\r\\n                //| where properties.dataSourceType in~ ('SQLDataBase','SAPHanaDatabase')\\r\\n                | extend vaultName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', properties.vaultName,\\r\\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\\r\\n                | extend friendlyName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', strcat(properties.dataSourceSetName , '/', properties.dataSourceName),\\r\\n                                             type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', properties.entityFriendlyName, '--')\\r\\n                | extend workloadType = tostring(case (isnotnull(properties.workloadType), properties.workloadType, properties.backupManagementType == 'AzureIaasVM', 'VM',\\r\\n                                                                 properties.backupManagementType == 'AzureStorage', 'AzureFileShare','--'))\\r\\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' ,strcat(properties.backupManagementType,'/',workloadType),\\r\\n                                               type =~ 'microsoft.dataprotection/backupVaults/backupJobs',properties.dataSourceType,'--')\\r\\n                | extend ErrorDescription = properties.errorDetails \\r\\n                | extend backupInstanceName = properties.backupInstanceId\\r\\n                | extend dsResourceGroup = split(split(properties.dataSourceId, '/resourceGroups/')[1],'/')[0]\\r\\n                | extend dsSubscription = split(split(properties.dataSourceId, '/subscriptions/')[1],'/')[0]\\r\\n                | extend status = properties.status\\r\\n                | extend dataSourceId = properties.dataSourceId\\r\\n                | extend resourceId = tolower(dataSourceId)\\r\\n                | extend primaryLocation = properties.dataSourceLocation\\r\\n                | extend jobStatus = case (properties.status == 'Completed' or properties.status == 'CompletedWithWarnings','Succeeded',\\r\\n                                           properties.status == 'Failed','Failed',properties.status == 'InProgress', 'Started', properties.status)\\r\\n                | extend operation = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs' and tolower(properties.operationCategory) startswith 'backup' and properties.isUserTriggered == 'true',\\r\\n                                          strcat('adhoc',properties.operationCategory),type =~ 'microsoft.dataprotection/backupVaults/backupJobs', tolower(properties.operationCategory),\\r\\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' and tolower(properties.operation) startswith 'backup' and properties.isUserTriggered == 'true',strcat('adhoc',properties.operation),\\r\\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs',tolower(properties.operation), '--')\\r\\n                | extend STime = todatetime(properties.startTime), ETime = todatetime(properties.endTime), duration = properties.duration\\r\\n                | where (dataSourceType in~ ('AzureWorkload/SQLDataBase','AzureWorkload/SAPHanaDatabase')) and (status in~ ('Started','InProgress','Succeeded','Completed','Failed','CompletedWithWarnings')) and ((ErrorDescription !contains \\\"Log chain is broken.\\\") and (ErrorDescription !contains \\\"Log Chain is broken.\\\") and (ErrorDescription !contains \\\"First full backup is missing for this datasource\\\")  and (ErrorDescription !contains \\\"Operation cancelled as a conflicting operation was already running on the same datasource\\\") and (ErrorDescription !contains \\\"Backup failed because a remedial backup is in progress for this datasource. Backups on this datasource will not succeed until the remedial backup is complete\\\"))\\r\\n                | where operation !contains \\\"adhoc\\\"\\r\\n                | where STime > ago(1d)\\r\\n                | summarize Total=count(status) by Scheduled = tostring(properties.status)\\r\\n                //| project Status = properties.status\",\"size\":4,\"title\":\"Scheduled\",\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\",\"crossComponentResources\":[\"/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79\",\"/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d\",\"/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a\"],\"visualization\":\"table\",\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"Scheduled\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"icons\",\"thresholdsGrid\":[{\"operator\":\"contains\",\"thresholdValue\":\"Failed\",\"representation\":\"3\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Completed\",\"representation\":\"success\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Progress\",\"representation\":\"pending\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Warning\",\"representation\":\"2\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Started\",\"representation\":\"info\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Succeeded\",\"representation\":\"1\",\"text\":\"{0}{1}\"},{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":\"success\",\"text\":\"{0}{1}\"}]}}]},\"tileSettings\":{\"titleContent\":{\"columnMatch\":\"Total\",\"formatter\":12,\"formatOptions\":{\"palette\":\"none\"}},\"leftContent\":{\"columnMatch\":\"Status\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"icons\",\"thresholdsGrid\":[{\"operator\":\"contains\",\"thresholdValue\":\"InProgress\",\"representation\":\"pending\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Failed\",\"representation\":\"failed\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Completed\",\"representation\":\"success\",\"text\":\"{0}{1}\"},{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":\"success\",\"text\":\"{0}{1}\"}]},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"decimal\",\"maximumFractionDigits\":2,\"maximumSignificantDigits\":3}}},\"showBorder\":true,\"size\":\"auto\"},\"chartSettings\":{\"seriesLabelSettings\":[{\"seriesName\":\"Completed\",\"color\":\"greenDarkDark\"},{\"seriesName\":\"Failed\",\"color\":\"redBright\"}]}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "backup",
+                      "formattedValue": "backup"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "8": {
+            "position": {
+              "x": 7,
+              "y": 4,
+              "colSpan": 3,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"recoveryservicesresources\\r\\n                | where type in~ ('microsoft.recoveryservices/vaults/backupjobs')\\r\\n                //| where properties.dataSourceType in~ ('SQLDataBase','SAPHanaDatabase')\\r\\n                | extend vaultName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', properties.vaultName,\\r\\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\\r\\n                | extend friendlyName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', strcat(properties.dataSourceSetName , '/', properties.dataSourceName),\\r\\n                                             type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', properties.entityFriendlyName, '--')\\r\\n                | extend workloadType = tostring(case (isnotnull(properties.workloadType), properties.workloadType, properties.backupManagementType == 'AzureIaasVM', 'VM',\\r\\n                                                                 properties.backupManagementType == 'AzureStorage', 'AzureFileShare','--'))\\r\\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' ,strcat(properties.backupManagementType,'/',workloadType),\\r\\n                                               type =~ 'microsoft.dataprotection/backupVaults/backupJobs',properties.dataSourceType,'--')\\r\\n                | extend ErrorDescription = properties.errorDetails \\r\\n                | extend backupInstanceName = properties.backupInstanceId\\r\\n                | extend dsResourceGroup = split(split(properties.dataSourceId, '/resourceGroups/')[1],'/')[0]\\r\\n                | extend dsSubscription = split(split(properties.dataSourceId, '/subscriptions/')[1],'/')[0]\\r\\n                | extend status = properties.status\\r\\n                | extend dataSourceId = properties.dataSourceId\\r\\n                | extend resourceId = tolower(dataSourceId)\\r\\n                | extend primaryLocation = properties.dataSourceLocation\\r\\n                | extend jobStatus = case (properties.status == 'Completed' or properties.status == 'CompletedWithWarnings','Succeeded',\\r\\n                                           properties.status == 'Failed','Failed',properties.status == 'InProgress', 'Started', properties.status)\\r\\n                | extend operation = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs' and tolower(properties.operationCategory) startswith 'backup' and properties.isUserTriggered == 'true',\\r\\n                                          strcat('adhoc',properties.operationCategory),type =~ 'microsoft.dataprotection/backupVaults/backupJobs', tolower(properties.operationCategory),\\r\\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' and tolower(properties.operation) startswith 'backup' and properties.isUserTriggered == 'true',strcat('adhoc',properties.operation),\\r\\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs',tolower(properties.operation), '--')\\r\\n                | extend STime = todatetime(properties.startTime), ETime = todatetime(properties.endTime), duration = properties.duration\\r\\n                | where (dataSourceType in~ ('AzureWorkload/SQLDataBase','AzureWorkload/SAPHanaDatabase')) and (status in~ ('Started','InProgress','Succeeded','Completed','Failed','CompletedWithWarnings')) and ((ErrorDescription !contains \\\"Log chain is broken.\\\") and (ErrorDescription !contains \\\"Log Chain is broken.\\\") and (ErrorDescription !contains \\\"First full backup is missing for this datasource\\\")  and (ErrorDescription !contains \\\"Operation cancelled as a conflicting operation was already running on the same datasource\\\") and (ErrorDescription !contains \\\"Backup failed because a remedial backup is in progress for this datasource. Backups on this datasource will not succeed until the remedial backup is complete\\\"))\\r\\n                | where operation contains \\\"adhoc\\\"\\r\\n                | where STime > ago(1d)\\r\\n                | summarize Total=count(status) by Adhoc = tostring(properties.status)\\r\\n                //| project Status = properties.status\",\"size\":4,\"title\":\"Adhoc\",\"noDataMessage\":\"No manual backups triggered.\",\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\",\"crossComponentResources\":[\"/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a\",\"/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d\",\"/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79\"],\"visualization\":\"table\",\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"Adhoc\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"icons\",\"thresholdsGrid\":[{\"operator\":\"contains\",\"thresholdValue\":\"Fail\",\"representation\":\"3\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Complete\",\"representation\":\"success\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Progress\",\"representation\":\"pending\",\"text\":\"{0}{1}\"},{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":\"success\",\"text\":\"{0}{1}\"}]}}]},\"tileSettings\":{\"titleContent\":{\"columnMatch\":\"Total\",\"formatter\":12,\"formatOptions\":{\"palette\":\"none\"}},\"leftContent\":{\"columnMatch\":\"Status\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"icons\",\"thresholdsGrid\":[{\"operator\":\"contains\",\"thresholdValue\":\"InProgress\",\"representation\":\"pending\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Failed\",\"representation\":\"failed\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Completed\",\"representation\":\"success\",\"text\":\"{0}{1}\"},{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":\"success\",\"text\":\"{0}{1}\"}]},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"decimal\",\"maximumFractionDigits\":2,\"maximumSignificantDigits\":3}}},\"showBorder\":true,\"size\":\"auto\"},\"chartSettings\":{\"seriesLabelSettings\":[{\"seriesName\":\"Completed\",\"color\":\"greenDarkDark\"},{\"seriesName\":\"Failed\",\"color\":\"redBright\"}]}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "backup",
+                      "formattedValue": "backup"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "9": {
+            "position": {
+              "x": 10,
+              "y": 4,
+              "colSpan": 3,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"RecoveryServicesResources\\r\\n                | where type in~ ('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems')\\r\\n                | extend policy = properties.policyInfo.policyId\\r\\n                | extend vaultName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),split(split(id, '/Microsoft.DataProtection/          backupVaults/')[1],'/')[0],type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\\r\\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',strcat(properties.backupManagementType,'/',properties.workloadType),type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),properties.dataSourceInfo.datasourceType,'--')\\r\\n                | extend DatabaseName = properties.friendlyName| extend dsResourceGroup = split(split(properties.dataSourceInfo.resourceID, '/resourceGroups/')[1],'/')[0]\\r\\n                | extend dsSubscription = split(split(properties.dataSourceInfo.resourceID, '/subscriptions/')[1],'/')[0]\\r\\n                | extend lastRestorePoint = properties.lastRecoveryPoint\\r\\n                | extend primaryLocation = properties.dataSourceInfo.resourceLocation\\r\\n                | extend InstanceOrAOAG = case(isnotnull(properties.serverName),strcat(properties.serverName,'/', properties.parentName), 'NA')\\r\\n                | extend policyName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'), extract(@'([^/]*)/backupPolicies/([^/]*)', 2, tostring(policy)),type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', properties.policyInfo.name,'--')\\r\\n                | extend Status = case(properties.currentProtectionState =~ \\\"ProtectionStopped\\\", 'Stopped',\\r\\n                                    properties.currentProtectionState =~ \\\"ProtectionConfigured\\\", 'Configured',\\r\\n                                    properties.currentProtectionState =~ \\\"ConfiguringProtectionFailed\\\", 'Failed',\\r\\n                                    properties.currentProtectionState =~ \\\"ConfiguringProtection\\\", 'Configuring',\\r\\n                                    properties.currentProtectionState =~ \\\"BackupsSuspended\\\", 'Suspended',\\r\\n                                    properties.currentProtectionState =~ \\\"SoftDeleted\\\", 'Deleted',\\r\\n                                    properties.currentProtectionState =~ \\\"ProtectionError\\\", 'Error',\\r\\n                                    \\\"--\\\")\\r\\n                //| extend ProtectionState = case(properties.currentProtectionState =~ \\\"ProtectionStopped\\\", 'Stopped',\\r\\n                //                    properties.currentProtectionState =~ \\\"ProtectionConfigured\\\", 'Configured',\\r\\n                //                    \\\"--\\\")\\r\\n                | extend Subscription = case(subscriptionId =~ \\\"2df031a7-e21f-49c7-b61e-b0bb3e097c79\\\", 'vestas-sap-ea-westeurope-dev-01',\\r\\n                                    subscriptionId =~ \\\"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\\\", 'vestas-sap-ea-westeurope-prd-01',\\r\\n                                    subscriptionId =~ \\\"cbb944ea-aa79-4701-909a-e114ab57ad7a\\\", 'vestas-sap-ea-westeurope-tst-01',\\r\\n                                    \\\"--\\\")\\r\\n                | extend DBType = case(InstanceOrAOAG contains \\\"AG.\\\", 'Always on AG',\\r\\n                                    (InstanceOrAOAG contains \\\"DB\\\") or (InstanceOrAOAG contains \\\"azsapd003\\\") or (InstanceOrAOAG contains \\\"azsapd007\\\") or (InstanceOrAOAG contains \\\"azsapddb04\\\") or (InstanceOrAOAG contains \\\"azsapddb07\\\") or (InstanceOrAOAG contains \\\"azsapd035\\\") or (InstanceOrAOAG contains \\\"azsapd039\\\") or (InstanceOrAOAG contains \\\"azsapd041\\\"), 'Standalone Instance',\\r\\n                                    \\\"--\\\")\\r\\n               // | extend DBType = case(isnull(dsResourceGroup), 'Always on AG',\\r\\n               //                     isnotnull(dsResourceGroup), 'Standalone Instance',\\r\\n               //                     \\\"--\\\")\\r\\n               //| where (Status in~ ('Configured','Stopped')\\r\\n               | where dataSourceType in~ ('AzureWorkload/SQLDataBase')\\r\\n               | project DatabaseName, InstanceOrAOAG, DBType, Status, policyName, dsResourceGroup, Subscription //, dataSourceType\\r\\n                //| project id, name,type, resourceGroup, vaultName, DatabaseName, InstanceOrAOAG, Subscription, dataSourceType, protectionState, policyName, primaryLocation, lastRestorePoint, properties, dsResourceGroup, dsSubscription, location\\r\\n                | summarize Total=count(InstanceOrAOAG) by tostring(Status) //= tostring(properties.currentProtectionState)\",\"size\":4,\"title\":\"SQL Backup Instance\",\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\",\"crossComponentResources\":[\"/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79\",\"/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d\",\"/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a\"],\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"Status\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"icons\",\"thresholdsGrid\":[{\"operator\":\"contains\",\"thresholdValue\":\"Stopped\",\"representation\":\"disabled\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Configured\",\"representation\":\"success\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Failed\",\"representation\":\"4\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Configuring\",\"representation\":\"pending\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Suspended\",\"representation\":\"warning\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Deleted\",\"representation\":\"Cancelled\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Error\",\"representation\":\"error\",\"text\":\"{0}{1}\"},{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":\"success\",\"text\":\"{0}{1}\"}]}}]}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "backup",
+                      "formattedValue": "backup"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "10": {
+            "position": {
+              "x": 13,
+              "y": 4,
+              "colSpan": 3,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"RecoveryServicesResources\\r\\n                | where type in~ ('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems')\\r\\n                |extend policy = properties.policyInfo.policyId| extend vaultName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),split(split(id, '/Microsoft.DataProtection/backupVaults/')[1],'/')[0],type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\\r\\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',strcat(properties.backupManagementType,'/',properties.workloadType),type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),properties.dataSourceInfo.datasourceType,'--')\\r\\n                | extend DatabaseName = properties.friendlyName\\r\\n                | extend dsResourceGroup = split(split(properties.dataSourceInfo.resourceID, '/resourceGroups/')[1],'/')[0]\\r\\n                | extend dsSubscription = split(split(properties.dataSourceInfo.resourceID, '/subscriptions/')[1],'/')[0]\\r\\n                | extend lastRestorePoint = properties.lastRecoveryPoint\\r\\n                | extend primaryLocation = properties.dataSourceInfo.resourceLocation\\r\\n                | extend instanceName = case(isnotnull(properties.serverName),strcat(properties.serverName,'/', properties.parentName), 'NA')\\r\\n                | extend policyName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'), extract(@'([^/]*)/backupPolicies/([^/]*)', 2, tostring(policy)),type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', properties.policyInfo.name,'--')\\r\\n                  | extend Status = case(properties.currentProtectionState =~ \\\"ProtectionStopped\\\", 'Stopped',\\r\\n                                    properties.currentProtectionState =~ \\\"ProtectionConfigured\\\", 'Configured',\\r\\n                                    properties.currentProtectionState =~ \\\"ConfiguringProtectionFailed\\\", 'Failed',\\r\\n                                    properties.currentProtectionState =~ \\\"ConfiguringProtection\\\", 'Configuring',\\r\\n                                    properties.currentProtectionState =~ \\\"BackupsSuspended\\\", 'Suspended',\\r\\n                                    properties.currentProtectionState =~ \\\"SoftDeleted\\\", 'Deleted',\\r\\n                                    properties.currentProtectionState =~ \\\"ProtectionError\\\", 'Error',\\r\\n                                    \\\"--\\\")\\r\\n                | extend Subscription = case(subscriptionId =~ \\\"2df031a7-e21f-49c7-b61e-b0bb3e097c79\\\", 'vestas-sap-ea-westeurope-dev-01',\\r\\n                                    subscriptionId =~ \\\"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\\\", 'vestas-sap-ea-westeurope-prd-01',\\r\\n                                    subscriptionId =~ \\\"cbb944ea-aa79-4701-909a-e114ab57ad7a\\\", 'vestas-sap-ea-westeurope-tst-01',\\r\\n                                    \\\"--\\\")\\r\\n                | where dataSourceType in~ ('AzureWorkload/SAPHanaDatabase','AzureWorkload/SAPHanaDBInstance')\\r\\n                | project DatabaseName, instanceName, Status, policyName, dsResourceGroup, Subscription\\r\\n                //| project id, name,type, resourceGroup, vaultName, friendlyName, instanceName, subscriptionId, dataSourceType, protectionState, policyName, primaryLocation, lastRestorePoint, properties, dsResourceGroup, dsSubscription, location\\r\\n                | summarize Total=count(DatabaseName) by tostring(Status)\",\"size\":4,\"title\":\"SAP HANA Backup Instance\",\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\",\"crossComponentResources\":[\"/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a\",\"/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d\",\"/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79\"],\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"Status\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"icons\",\"thresholdsGrid\":[{\"operator\":\"contains\",\"thresholdValue\":\"Stopped\",\"representation\":\"disabled\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Configured\",\"representation\":\"success\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Failed\",\"representation\":\"4\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Configuring\",\"representation\":\"pending\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Suspended\",\"representation\":\"2\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Deleted\",\"representation\":\"Disable\",\"text\":\"{0}{1}\"},{\"operator\":\"contains\",\"thresholdValue\":\"Error\",\"representation\":\"error\",\"text\":\"{0}{1}\"},{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":\"success\",\"text\":\"{0}{1}\"}]}}]}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "backup",
+                      "formattedValue": "backup"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "11": {
+            "position": {
+              "x": 16,
+              "y": 4,
+              "colSpan": 8,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"let data_disk_threshold_percent = 10;\\nlet os_disk_threshold_percent = 10;\\nlet disk_free_space_percent=\\nPerf \\n| where TimeGenerated > ago(10m)\\n| where ObjectName == \\\"LogicalDisk\\\" and CounterName == \\\"% Free Space\\\" \\n| summarize (TimeGenerated, Free_Space_Percent)=arg_max(TimeGenerated, CounterValue) by Computer, InstanceName \\n| where strlen(InstanceName) ==2 and InstanceName contains \\\":\\\";\\nlet disk_free_MB=\\nPerf \\n| where TimeGenerated > ago(10m)\\n| where ObjectName == \\\"LogicalDisk\\\" and CounterName == \\\"Free Megabytes\\\" \\n| summarize (TimeGenerated, Free_MB)=arg_max(TimeGenerated, CounterValue) by Computer, InstanceName \\n| where strlen(InstanceName) ==2 and InstanceName contains \\\":\\\";\\ndisk_free_space_percent \\n| join (\\n   disk_free_MB \\n) on Computer, InstanceName\\n| extend Used_Space_Percent = round(100 - Free_Space_Percent)\\n| extend Alert_Threshold = case(InstanceName == 'C:', os_disk_threshold_percent, data_disk_threshold_percent)\\n| where (InstanceName in ('C:', 'D:') and Free_Space_Percent <= os_disk_threshold_percent) \\n        or (InstanceName !in ('C:', 'D:') and Free_Space_Percent <= data_disk_threshold_percent)\\n| parse Computer with Computer \\\".\\\" *\\n| project Server = Computer, Drive = InstanceName, UsedSpacePCT = Used_Space_Percent, FreeSpacePCT = Free_Space_Percent , Free_MB\\n//| project Server = Computer, InstanceName, UsedSpacePCT = Used_Space_Percent, FreeSpacePCT = Free_Space_Percent , Free_MB\\n//| where ((InstanceName !in (\\\"C:\\\",\\\"D:\\\",\\\"Z:\\\",\\\"S:\\\") and Used_Space_Percent > 90)\\n| where ((Drive !contains \\\"C:\\\" and Drive !contains \\\"D:\\\" and Drive !contains \\\"S:\\\") and UsedSpacePCT > 90) //or ((InstanceName <> \\\"C:\\\" and InstanceName <> \\\"D:\\\") and Used_Space_Percent >= 95)\\n| where (Server contains \\\"db\\\") or (Server in~ (\\\"azsapd003\\\",\\\"azsapd007\\\",\\\"azsapd035\\\",\\\"azsapd039\\\",\\\"azsapd041\\\",\\\"azsapd044\\\",\\\"dkcdcsapp076\\\",\\\"dkcdcsapd082\\\"))\",\"size\":1,\"title\":\"Windows Critical DIsk Space\",\"noDataMessage\":\"No critical disk space detected.\",\"timeContext\":{\"durationMs\":86400000},\"showRefreshButton\":true,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01\"],\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"UsedSpacePCT\",\"formatter\":3,\"formatOptions\":{\"min\":1,\"max\":100,\"palette\":\"greenRed\"}},{\"columnMatch\":\"Used_Space_Percent\",\"formatter\":3,\"formatOptions\":{\"min\":1,\"max\":100,\"palette\":\"greenRed\"}}]}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "stat",
+                      "formattedValue": "stat"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "12": {
+            "position": {
+              "x": 0,
+              "y": 5,
+              "colSpan": 1,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "filter",
+                  "isOptional": true
+                },
+                {
+                  "name": "resourceType",
+                  "value": "Microsoft.RecoveryServices/vaults"
+                },
+                {
+                  "name": "kind",
+                  "isOptional": true
+                },
+                {
+                  "name": "view",
+                  "value": {
+                    "id": "bf887b74-9d9e-4693-aa1a-66fd9fe58073",
+                    "name": "bf887b74-9d9e-4693-aa1a-66fd9fe58073",
+                    "filterFacets": [
+                      {
+                        "key": "resourceGroup",
+                        "uniqueId": "bf887b74-9d9e-4693-aa1a-66fd9fe58046",
+                        "display": "Resource group",
+                        "operator": 1,
+                        "isAllValues": true,
+                        "facetKind": 1
+                      },
+                      {
+                        "key": "locationDisplayName",
+                        "uniqueId": "bf887b74-9d9e-4693-aa1a-66fd9fe58047",
+                        "display": "Location",
+                        "operator": 1,
+                        "isAllValues": true,
+                        "facetKind": 1
+                      }
+                    ],
+                    "groupByValue": "",
+                    "sortedColumns": [
+                      {
+                        "sortBy": "name",
+                        "order": 1,
+                        "castFunction": 2
+                      }
+                    ],
+                    "showAll": false,
+                    "gridColumns": [
+                      {
+                        "id": "assetType",
+                        "name": "Type",
+                        "description": "Display name of the resource type.",
+                        "visible": true,
+                        "index": 0
+                      },
+                      {
+                        "id": "resourceGroup",
+                        "name": "Resource group",
+                        "visible": true,
+                        "index": 1
+                      },
+                      {
+                        "id": "location",
+                        "name": "Location",
+                        "description": "The supported Azure location where the resource exists.",
+                        "visible": true,
+                        "index": 2
+                      },
+                      {
+                        "id": "subscription",
+                        "name": "Subscription",
+                        "visible": true,
+                        "index": 3
+                      }
+                    ],
+                    "gridColumnWidths": {
+                      "assetType": "100fr",
+                      "resourceGroup": "100fr",
+                      "location": "100fr",
+                      "subscription": "100fr"
+                    },
+                    "currentView": 1,
+                    "visualizationId": "location",
+                    "visualizationType": 4,
+                    "visualizationThreshold": 1
+                  },
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/BrowseResourceTile"
+            }
+          },
+          "13": {
+            "position": {
+              "x": 0,
+              "y": 6,
+              "colSpan": 1,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "filter",
+                  "isOptional": true
+                },
+                {
+                  "name": "view",
+                  "value": {
+                    "id": "bf887b74-9d9e-4693-aa1a-66fd9fe5807c",
+                    "name": "bf887b74-9d9e-4693-aa1a-66fd9fe5807c",
+                    "filterFacets": [
+                      {
+                        "key": "locationDisplayName",
+                        "uniqueId": "bf887b74-9d9e-4693-aa1a-66fd9fe58077",
+                        "display": "Location",
+                        "operator": 1,
+                        "isAllValues": true,
+                        "facetKind": 1
+                      }
+                    ],
+                    "groupByValue": "",
+                    "sortedColumns": [
+                      {
+                        "sortBy": "name",
+                        "order": 1,
+                        "castFunction": 2
+                      }
+                    ],
+                    "showAll": false,
+                    "gridColumns": [
+                      {
+                        "id": "subscription",
+                        "name": "Subscription",
+                        "visible": true,
+                        "index": 0
+                      },
+                      {
+                        "id": "location",
+                        "name": "Location",
+                        "description": "The supported Azure location where the resource exists.",
+                        "visible": true,
+                        "index": 1
+                      }
+                    ],
+                    "gridColumnWidths": {
+                      "subscription": "100fr",
+                      "location": "100fr"
+                    },
+                    "currentView": 1,
+                    "visualizationId": "location",
+                    "visualizationType": 4,
+                    "visualizationThreshold": 1
+                  },
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/BrowseResourceGroupsTile"
+            }
+          },
+          "14": {
+            "position": {
+              "x": 0,
+              "y": 7,
+              "colSpan": 10,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"// function Params - Report Filters\\r\\nlet RangeStart = startofday({TimeRange:start});\\r\\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\\r\\nlet VaultSubscriptionList = todynamic( replace(\\\"/subscriptions/\\\", \\\"\\\", @\\\"{VaultSubscription}\\\"));\\r\\nlet VaultLocationList = todynamic( @\\\"{VaultLocation}\\\"); \\r\\nlet VaultTypeList = \\\"*\\\";\\r\\nlet VaultList = todynamic( @\\\"{VaultName}\\\");\\r\\nlet ExcludeLegacyEvent = @\\\"{ExcludeLegacyEvent}\\\";\\r\\nlet BackupSolutionList = @\\\"{DatasourceType}\\\";\\r\\n// function Params - other Filters\\r\\nlet ProtectionInfoList =  \\\"*\\\";\\r\\nlet Item_search =   \\\"*;*\\\";\\r\\nlet ItemArray = split(Item_search, \\\";\\\");\\r\\nlet ItemArray_length = array_length(ItemArray);\\r\\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\\r\\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \\\"\\\");\\r\\nlet DisplayAllFields = true;\\r\\nlet JobOperationList = \\\"*\\\";\\r\\nlet JobStatusList =  \\\"*\\\";\\r\\nlet JobFailureCodeList =  \\\"*\\\";\\r\\nlet ExcludeLog = True;\\r\\nlet BackupInstanceDetails = (){\\r\\n// calling LA System Function\\r\\n_AzureBackup_GetBackupInstances(RangeEnd, RangeEnd, VaultSubscriptionList, VaultLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, ProtectionInfoList, DatasourceSetName, BackupInstanceName, DisplayAllFields)\\r\\n// query to transform function output\\r\\n| summarize BackupInstances=count(UniqueId), CloudStorage=sum(VaultStore_StorageConsumptionInMBs)/(1024) by BackupSolution\\r\\n};\\r\\nlet JobSuccessPercentageTable = (){\\r\\n// calling LA System Function\\r\\n_AzureBackup_GetJobs(RangeStart, RangeEnd, VaultSubscriptionList, VaultLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, JobOperationList, JobStatusList, JobFailureCodeList, DatasourceSetName, BackupInstanceName, ExcludeLog)\\r\\n// query to transform function output\\r\\n| extend success=iff((Status == \\\"Completed\\\" or Status == \\\"CompletedWithWarnings\\\") , 1 , 0)\\r\\n| extend record = iff(UniqueId != \\\"\\\", 1, 0)  // to be used for total row count\\r\\n| summarize SuccessfulCount =sum(success), TotalCount=sum(record) by BackupSolution\\r\\n| extend JobSuccessPercentage = (SuccessfulCount*100)/todouble(TotalCount)\\r\\n| project-away SuccessfulCount, TotalCount\\r\\n};\\r\\nBackupInstanceDetails | join kind = leftouter (JobSuccessPercentageTable) on BackupSolution  | project-away BackupSolution1 | project BackupSolution, BackupInstances, JobSuccessPercentage=iff( (isnan( JobSuccessPercentage) or isinf( JobSuccessPercentage) or isempty( JobSuccessPercentage)), \\\"-\\\", strcat(tostring(round( JobSuccessPercentage,2)), \\\" %\\\")), CloudStorage\",\"size\":3,\"noDataMessage\":\"No records found for the selected time range and scope\",\"showExportToExcel\":true,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"{Workspaces}\"],\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"BackupSolution\",\"formatter\":0,\"tooltipFormat\":{\"tooltip\":\"Backup Solution\"}},{\"columnMatch\":\"BackupInstances\",\"formatter\":4,\"formatOptions\":{\"min\":0,\"palette\":\"blue\",\"customColumnWidthSetting\":\"25%\"},\"tooltipFormat\":{\"tooltip\":\"Number of backup instances backed up using the given backup solution, as of the end of the selected time range\"}},{\"columnMatch\":\"JobSuccessPercentage\",\"formatter\":1,\"formatOptions\":{\"customColumnWidthSetting\":\"25%\"},\"numberFormat\":{\"unit\":1,\"options\":{\"style\":\"decimal\",\"useGrouping\":false,\"maximumFractionDigits\":2}},\"tooltipFormat\":{\"tooltip\":\"% of Jobs (that were triggered in the selected time range) that were successful for backup instances backed up using the given backup solution\"}},{\"columnMatch\":\"CloudStorage\",\"formatter\":4,\"formatOptions\":{\"min\":0,\"palette\":\"blue\",\"customColumnWidthSetting\":\"25%\"},\"numberFormat\":{\"unit\":0,\"options\":{\"style\":\"decimal\",\"minimumFractionDigits\":2,\"maximumFractionDigits\":2}},\"tooltipFormat\":{\"tooltip\":\"Total cloud storage consumed by backup instances backed up by the given backup solution, as of the end of the selected time range\"}}],\"labelSettings\":[{\"columnId\":\"BackupSolution\",\"label\":\"Backup Solution\"},{\"columnId\":\"BackupInstances\",\"label\":\"Backup Instances\"},{\"columnId\":\"JobSuccessPercentage\",\"label\":\"Job Success %\"},{\"columnId\":\"CloudStorage\",\"label\":\"Cloud Storage (GB)\"}]},\"sortBy\":[]}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "report",
+                      "formattedValue": "report"
+                    },
+                    "TabName": {
+                      "type": 1,
+                      "value": "Summary",
+                      "formattedValue": "Summary"
+                    },
+                    "Subscriptions": {
+                      "type": 6,
+                      "value": [
+                        "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563",
+                        "/subscriptions/ceb84c3b-0fe0-4a8f-8461-b949ac7d27ae",
+                        "/subscriptions/2e7fbbca-efeb-4041-a2ae-03e312623775",
+                        "/subscriptions/ce5302c7-4de2-4fab-affe-786447c1684c",
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Subscriptions",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "'/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563','/subscriptions/ceb84c3b-0fe0-4a8f-8461-b949ac7d27ae','/subscriptions/2e7fbbca-efeb-4041-a2ae-03e312623775','/subscriptions/ce5302c7-4de2-4fab-affe-786447c1684c','/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79','/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d','/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a'"
+                    },
+                    "Workspaces": {
+                      "type": 5,
+                      "value": [
+                        "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "weu-prod-dch-log01",
+                      "displayName": "Workspaces",
+                      "formattedValue": "'/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01'"
+                    },
+                    "VaultsUsingAzureDiagnostics": {
+                      "type": 1,
+                      "value": 1,
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": 1,
+                      "displayName": "VaultsUsingAzureDiagnostics",
+                      "formattedValue": 1
+                    },
+                    "AzureStorageCutOffDate": {
+                      "type": 1,
+                      "value": "5/14/2020, 12:00:00.000 AM",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "5/14/2020, 12:00:00.000 AM",
+                      "displayName": "AzureStorageCutOffDate",
+                      "formattedValue": "5/14/2020, 12:00:00.000 AM"
+                    },
+                    "TimeRange": {
+                      "type": 4,
+                      "value": {
+                        "durationMs": 7776000000
+                      },
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "Last 90 days",
+                      "displayName": "Time Range",
+                      "formattedValue": "Last 90 days"
+                    },
+                    "ExcludeLegacyEvent": {
+                      "type": 2,
+                      "value": "True",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "True",
+                      "displayName": "Exclude Legacy Table",
+                      "formattedValue": "True"
+                    },
+                    "DatasourceType": {
+                      "type": 2,
+                      "value": [
+                        "SAP HANA in Azure VM Backup",
+                        "SQL in Azure VM Backup"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "SAP HANA in Azure VM Backup, SQL in Azure VM Backup",
+                      "displayName": "Backup Solution",
+                      "formattedValue": "SAP HANA in Azure VM Backup,SQL in Azure VM Backup"
+                    },
+                    "VaultSubscription": {
+                      "type": 6,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Subscription Name",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "*"
+                    },
+                    "VaultLocation": {
+                      "type": 2,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Vault Location",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "*"
+                    },
+                    "VaultName": {
+                      "type": 2,
+                      "value": [
+                        "*"
+                      ],
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "All",
+                      "displayName": "Vault Name",
+                      "specialValue": [
+                        "value::all"
+                      ],
+                      "formattedValue": "*"
+                    },
+                    "ResourceGroupId": {
+                      "type": 1,
+                      "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg",
+                      "displayName": "ResourceGroupId",
+                      "formattedValue": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg"
+                    },
+                    "WorkspaceName": {
+                      "type": 1,
+                      "value": "weu-prod-dch-log01",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "weu-prod-dch-log01",
+                      "displayName": "WorkspaceName",
+                      "formattedValue": "weu-prod-dch-log01"
+                    },
+                    "WorkspaceResourceGroup": {
+                      "type": 1,
+                      "value": "dch-coremgmt-rg",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "dch-coremgmt-rg",
+                      "displayName": "WorkspaceResourceGroup",
+                      "formattedValue": "dch-coremgmt-rg"
+                    },
+                    "WorkspaceSubscriptionId": {
+                      "type": 1,
+                      "value": "cf49a21b-2b75-4240-b62b-2f5b04f53563",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "cf49a21b-2b75-4240-b62b-2f5b04f53563",
+                      "displayName": "WorkspaceSubscriptionId",
+                      "formattedValue": "cf49a21b-2b75-4240-b62b-2f5b04f53563"
+                    },
+                    "LogicApp_VaultSubscriptionList": {
+                      "type": 1,
+                      "value": "*",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "*",
+                      "displayName": "LogicApp_VaultSubscriptionList",
+                      "formattedValue": "*"
+                    },
+                    "LogicApp_VaultLocationList": {
+                      "type": 1,
+                      "value": "*",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "*",
+                      "displayName": "LogicApp_VaultLocationList",
+                      "formattedValue": "*"
+                    },
+                    "LogicApp_VaultList": {
+                      "type": 1,
+                      "value": "*",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "*",
+                      "displayName": "LogicApp_VaultList",
+                      "formattedValue": "*"
+                    },
+                    "LogicApp_DatasourceTypeList": {
+                      "type": 1,
+                      "value": "SAP HANA in Azure VM Backup,SQL in Azure VM Backup",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "SAP HANA in Azure VM Backup,SQL in Azure VM Backup",
+                      "displayName": "LogicApp_DatasourceTypeList",
+                      "formattedValue": "SAP HANA in Azure VM Backup,SQL in Azure VM Backup"
+                    },
+                    "LogicApp_ExcludeLegacyEvent": {
+                      "type": 1,
+                      "value": "True",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "True",
+                      "displayName": "LogicApp_ExcludeLegacyEvent",
+                      "formattedValue": "True"
+                    },
+                    "LogicApp_AggregationType": {
+                      "type": 1,
+                      "value": "Weekly",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "Weekly",
+                      "displayName": "LogicApp_AggregationType",
+                      "formattedValue": "Weekly"
+                    },
+                    "LogicApp_TimeRangeInDays": {
+                      "type": 1,
+                      "value": 90,
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": 90,
+                      "displayName": "LogicApp_TimeRangeInDays",
+                      "formattedValue": 90
+                    },
+                    "AggregationType": {
+                      "type": 1,
+                      "value": "Weekly",
+                      "isPending": false,
+                      "isWaiting": false,
+                      "isFailed": false,
+                      "isGlobal": false,
+                      "labelValue": "Weekly",
+                      "displayName": "AggregationType",
+                      "formattedValue": "Weekly"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart",
+              "partHeader": {
+                "title": "Database Backup",
+                "subtitle": "Summary"
+              }
+            }
+          },
+          "15": {
+            "position": {
+              "x": 10,
+              "y": 7,
+              "colSpan": 6,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"// Events by event source \\r\\nlet eventIDS = dynamic([\\\"605\\\", \\\"823\\\", \\\"824\\\", \\\"825\\\", \\\"3414\\\", \\\"5180\\\", \\\"7105\\\", \\\"9004\\\"]);\\r\\nEvent\\r\\n//| where TimeGenerated >= ago(3d)\\r\\n| where EventID in (eventIDS)\\r\\n| summarize LatestErrorDate = max(TimeGenerated) by _ResourceId, Computer, EventID, RenderedDescription\\r\\n| project Computer, EventID, LatestErrorDate, RenderedDescription, _ResourceId\\r\\n| order by LatestErrorDate desc\\r\\n\",\"size\":4,\"title\":\"Database Corruption Monitoring\",\"noDataMessage\":\"No database integrity threats detected.\",\"noDataMessageStyle\":3,\"timeContext\":{\"durationMs\":259200000},\"showRefreshButton\":true,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01\"],\"visualization\":\"table\",\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"EventID\",\"formatter\":0,\"formatOptions\":{\"compositeBarSettings\":{\"labelText\":\"\",\"columnSettings\":[]},\"customColumnWidthSetting\":\"8ch\"}},{\"columnMatch\":\"_ResourceId\",\"formatter\":5}]},\"tileSettings\":{\"showBorder\":false,\"titleContent\":{\"columnMatch\":\"Computer\",\"formatter\":1},\"leftContent\":{\"columnMatch\":\"EventID\",\"formatter\":12,\"formatOptions\":{\"palette\":\"auto\"},\"numberFormat\":{\"unit\":17,\"options\":{\"maximumSignificantDigits\":3,\"maximumFractionDigits\":2}}}}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "check",
+                      "formattedValue": "check"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "16": {
+            "position": {
+              "x": 16,
+              "y": 8,
+              "colSpan": 8,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"let disk_free_space_percent=\\n    Perf \\n    | where TimeGenerated > ago(10m)\\n    | where ObjectName == \\\"Logical Disk\\\" and CounterName == \\\"% Used Space\\\"\\n    | summarize (TimeGenerated, Used_Space_Percent)=arg_max(TimeGenerated, CounterValue) by Computer, InstanceName \\n    | where strlen(InstanceName) == 2 and (InstanceName contains \\\":\\\") or (InstanceName contains \\\"/\\\");\\nlet disk_free_MB=\\n    Perf \\n    | where TimeGenerated > ago(10m)\\n    | where ObjectName == \\\"Logical Disk\\\" and CounterName == \\\"Free Megabytes\\\" \\n    | summarize (TimeGenerated, Free_MB)=arg_max(TimeGenerated, CounterValue) by Computer, InstanceName \\n    | where strlen(InstanceName) == 2 and (InstanceName contains \\\":\\\") or (InstanceName contains \\\"/\\\");\\ndisk_free_space_percent \\n| join (\\n    disk_free_MB \\n    )\\n    on Computer, InstanceName\\n//| extend Used_Space_Percent = round(100 - Free_Space_Percent)\\n//| parse InstanceName with InstanceName \\\"/\\\" *\\n| project Server = Computer, Drive = InstanceName, UsedSpacePCT = Used_Space_Percent, Free_MB\\n| where Server in~ (\\\"azsappdb03\\\",\\\"azsappdb04\\\",\\\"azsappdb05\\\",\\\"azsappdb06\\\",\\\"azsappdb21\\\",\\\"azsappdb28\\\",\\\"azsappdb29\\\",\\\"azsapddb03\\\",\\\"azsapddb05\\\",\\\"azsapddb06\\\",\\\"azsapddb10\\\",\\\"azsapddb11\\\",\\\"azsapddb15\\\",\\\"azsapqdb04\\\",\\\"azsapqdb16\\\")\\n| where UsedSpacePCT >= 90\\n| where Drive in~ (\\\"/usr/sap\\\",\\\"/hana/log\\\",\\\"/hana/shared\\\",\\\"/hana/backup\\\",\\\"/hana/data\\\")\\n| order by UsedSpacePCT desc \\n\",\"size\":1,\"title\":\"Linux Critical Disk Space\",\"noDataMessage\":\"No critical disk space detected.\",\"timeContext\":{\"durationMs\":86400000},\"showRefreshButton\":true,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01\"],\"visualization\":\"table\",\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"UsedSpacePCT\",\"formatter\":3,\"formatOptions\":{\"min\":1,\"max\":100,\"palette\":\"greenRed\"}},{\"columnMatch\":\"Computer\",\"formatter\":1},{\"columnMatch\":\"Used_Space_Percent\",\"formatter\":3,\"formatOptions\":{\"min\":1,\"max\":100,\"palette\":\"greenRed\",\"compositeBarSettings\":{\"labelText\":\"\",\"columnSettings\":[]}}}]},\"sortBy\":[]}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "stat",
+                      "formattedValue": "stat"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "17": {
+            "position": {
+              "x": 0,
+              "y": 10,
+              "colSpan": 8,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"// Chart CPU if its under nn% over the past nn days/hours\\nlet setpctValue = 85;\\n// enter a % value to check\\nlet startDate = ago(1h);\\n// enter how many days/hours to look back on\\nPerf\\n| where TimeGenerated > startDate\\n| where ObjectName == \\\"Processor\\\" and CounterName == \\\"% Processor Time\\\" and InstanceName == \\\"_Total\\\"\\n| summarize PCT90CPUPercentTime = percentile(CounterValue, 90) by Computer\\n| where PCT90CPUPercentTime >= setpctValue\\n| summarize max(PCT90CPUPercentTime) by Computer\\n| join\\n(\\nPerf\\n| where TimeGenerated > startDate\\n| where ObjectName == \\\"Processor\\\" and CounterName == \\\"% Processor Time\\\" and InstanceName == \\\"_Total\\\"\\n)\\non Computer\\n| where (Computer contains \\\"db\\\") or (Computer in~ (\\\"azsapd003\\\",\\\"azsapd007\\\",\\\"azsapd035\\\",\\\"azsapd039\\\",\\\"azsapd041\\\",\\\"azsapd044\\\"))\\n| make-series PCT90CPUPercentTime = percentile(CounterValue, 90) on TimeGenerated from ago( 1h ) to now() step 5m by Computer\\n| render timechart\\n\\n\",\"size\":1,\"aggregation\":5,\"title\":\"High CPU Servers\",\"noDataMessage\":\"CPU utilizations are normal.\",\"timeContext\":{\"durationMs\":86400000},\"showRefreshButton\":true,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01\"],\"chartSettings\":{\"xAxis\":\"TimeGenerated\",\"showLegend\":true,\"customThresholdLine\":\"75\",\"customThresholdLineStyle\":4}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "stat",
+                      "formattedValue": "stat"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "18": {
+            "position": {
+              "x": 8,
+              "y": 10,
+              "colSpan": 8,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/dch-coremgmt-rg/providers/microsoft.operationalinsights/workspaces/weu-prod-dch-log01"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "15e3ba44-1f6c-46a7-ac3e-dd812d89a3ee",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "P1D",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "let free_memory_percent = Perf\n    | where CounterName == \"% Committed Bytes In Use\"\n    | summarize arg_max(TimeGenerated, CounterValue) by Computer\n    | project TimeGenerated, Computer, free_memory_percent=100 - CounterValue;\nlet free_memory_gigs = Perf\n    | where CounterName == \"Available MBytes\"\n    | summarize arg_max(TimeGenerated, CounterValue) by Computer\n    | project TimeGenerated, Computer, Free_Memory_GB=(round(CounterValue / 1024, 2));\nfree_memory_gigs \n| join kind= innerunique(free_memory_percent) on Computer\n| where TimeGenerated > ago(3m) \n//| where time_diff=abs((TimeGenerated-TimeGenerated1)/1m)<1\n| where Computer contains \"db\"\n| project\n    Computer,\n    Free_Memory_GB,\n    //Total_GB=(round((Free_Memory_GB * 100) / free_memory_percent, 2)),\n    MemoryUsage=(100 * ((round((Free_Memory_GB * 100) / free_memory_percent, 2)) - Free_Memory_GB)) / (round((Free_Memory_GB * 100) / free_memory_percent, 2))\n//| project TimeGenerated, Computer, Free_Memory_GB, Total_GB=(round((Free_Memory_GB*100)/free_memory_percent,2))\n| sort by MemoryUsage desc  \n| top 10 by MemoryUsage\n\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "UnstackedBar",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "weu-prod-dch-log01",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "Computer",
+                      "type": "string"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "MemoryUsage",
+                        "type": "real"
+                      }
+                    ],
+                    "splitBy": [],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": true,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "PartTitle": "Memory"
+                }
+              }
+            }
+          },
+          "19": {
+            "position": {
+              "x": 16,
+              "y": 12,
+              "colSpan": 8,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"// Events by event source \\r\\nlet eventIDS = dynamic([\\\"1000\\\",\\\"1001\\\",\\\"1006\\\",\\\"1057\\\",\\\"1069\\\",\\\"1070\\\",\\\"1073\\\",\\\"1080\\\",\\\"1090\\\",\\\"1092\\\",\\\"1093\\\",\\\"1105\\\",\\\"1135\\\",\\\"1146\\\",\\\"1177\\\",\\\"1181\\\",\\\"1247\\\",\\\"1248\\\",\\\"1282\\\",\\\"1542\\\",\\\"1543\\\",\\\"1546\\\",\\\"1547\\\",\\\"1553\\\",\\\"1554\\\",\\\"1556\\\",\\\"1561\\\",\\\"1641\\\",\\\"1201\\\",\\\"1024\\\",\\\"1034\\\",\\\"1035\\\",\\\"1037\\\",\\\"1038\\\",\\\"1039\\\",\\\"1040\\\",\\\"1041\\\",\\\"1042\\\",\\\"1044\\\",\\\"1046\\\",\\\"1047\\\",\\\"1048\\\",\\\"1049\\\",\\\"1050\\\",\\\"1051\\\",\\\"1052\\\",\\\"1053\\\",\\\"1054\\\",\\\"1055\\\",\\\"1069\\\",\\\"1077\\\",\\\"1078\\\",\\\"1121\\\",\\\"1127\\\",\\\"1129\\\",\\\"1130\\\",\\\"1137\\\",\\\"1138\\\",\\\"1141\\\",\\\"1142\\\",\\\"1182\\\",\\\"1183\\\",\\\"1191\\\",\\\"1192\\\",\\\"1193\\\",\\\"1194\\\",\\\"1195\\\",\\\"1196\\\",\\\"1205\\\",\\\"1206\\\",\\\"1207\\\",\\\"1208\\\",\\\"1211\\\",\\\"1212\\\",\\\"1213\\\",\\\"1214\\\",\\\"1215\\\",\\\"1218\\\",\\\"1219\\\",\\\"1220\\\",\\\"1223\\\",\\\"1226\\\",\\\"1227\\\",\\\"1228\\\",\\\"1229\\\",\\\"1230\\\",\\\"1231\\\",\\\"1232\\\",\\\"1233\\\",\\\"1234\\\",\\\"1242\\\",\\\"1245\\\",\\\"1250\\\",\\\"1254\\\",\\\"1255\\\",\\\"1256\\\"]);\\r\\nEvent\\r\\n//| where TimeGenerated >= ago(24h)\\r\\n| where EventID in (eventIDS)\\r\\n| where (Computer contains \\\"db\\\") or (Computer in~ (\\\"azsapd003\\\",\\\"azsapd007\\\",\\\"azsapd035\\\",\\\"azsapd039\\\",\\\"azsapd041\\\",\\\"azsapd044\\\"))\\r\\n| summarize LatestErrorDate = max(TimeGenerated) by _ResourceId, Computer, EventID, RenderedDescription\\r\\n| project Computer, EventID, LatestErrorDate, RenderedDescription //, _ResourceId\\r\\n| order by LatestErrorDate desc\",\"size\":1,\"title\":\"Failover Clustering Errors\",\"noDataMessage\":\"No clustering errors occured.\",\"timeContext\":{\"durationMs\":43200000},\"showRefreshButton\":true,\"showExportToExcel\":true,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01\"]}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "check",
+                      "formattedValue": "check"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "20": {
+            "position": {
+              "x": 0,
+              "y": 14,
+              "colSpan": 3,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"print banner=strcat(\\\"SQL Server\\\"), banner1=strcat(\\\"and SAP HANA\\\"), banner2=strcat(\\\"in Azure VM\\\"), X = \\\"Virtual Machines List\\\"\\r\\n\",\"size\":3,\"color\":\"green\",\"timeContext\":{\"durationMs\":86400000},\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01\"],\"visualization\":\"tiles\",\"tileSettings\":{\"titleContent\":{\"columnMatch\":\"banner\",\"formatter\":12,\"formatOptions\":{\"palette\":\"blue\",\"compositeBarSettings\":{\"labelText\":\"\",\"columnSettings\":[{\"columnName\":\"banner\",\"color\":\"orange\"}]}}},\"subtitleContent\":{\"columnMatch\":\"banner1\",\"formatter\":12,\"formatOptions\":{\"palette\":\"blue\"}},\"leftContent\":{\"columnMatch\":\"banner2\",\"formatter\":12,\"formatOptions\":{\"palette\":\"blue\"}},\"rightContent\":{\"columnMatch\":\"banner3\",\"formatter\":12,\"formatOptions\":{\"palette\":\"blue\"}},\"secondaryContent\":{\"columnMatch\":\"X\",\"formatter\":18,\"formatOptions\":{\"thresholdsOptions\":\"icons\",\"thresholdsGrid\":[{\"operator\":\"contains\",\"thresholdValue\":\"Virtual\",\"representation\":\"Hyperlink\",\"text\":\"{0}{1}\"},{\"operator\":\"Default\",\"thresholdValue\":null,\"representation\":\"success\",\"text\":\"{0}{1}\"}]}},\"showBorder\":true,\"size\":\"auto\"},\"textSettings\":{\"style\":\"bignumber\"}}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "list",
+                      "formattedValue": "list"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "21": {
+            "position": {
+              "x": 3,
+              "y": 14,
+              "colSpan": 8,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"// Events by event source \\r\\nlet eventIDS = dynamic([\\\"41\\\", \\\"1074\\\", \\\"1076\\\"]);\\r\\nEvent\\r\\n| where TimeGenerated >= ago(24h)\\r\\n| where EventID in (eventIDS)\\r\\n| where (Computer contains \\\"db\\\") or (Computer in~ (\\\"azsapd003\\\",\\\"azsapd007\\\",\\\"azsapd035\\\",\\\"azsapd039\\\",\\\"azsapd041\\\"))\\r\\n| summarize LatestErrorDate = max(TimeGenerated) by _ResourceId, Computer, EventID, RenderedDescription\\r\\n| project Computer, EventID, LatestErrorDate, RenderedDescription//, _ResourceId\\r\\n| order by LatestErrorDate desc\",\"size\":0,\"title\":\"VM Shutdown and Restart Log\",\"noDataMessage\":\"No restart and/or shutdown occured.\",\"showRefreshButton\":true,\"showExportToExcel\":true,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01\"]}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "stat",
+                      "formattedValue": "stat"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          },
+          "22": {
+            "position": {
+              "x": 11,
+              "y": 14,
+              "colSpan": 5,
+              "rowSpan": 3
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": null,
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "value": [
+                    "Azure Monitor"
+                  ],
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/ag-hpmo-rg-01/providers/microsoft.insights/workbooks/4a1063c5-9f3f-4900-981b-cbbfbc241106",
+                  "isOptional": true
+                },
+                {
+                  "name": "Type",
+                  "value": "workbook",
+                  "isOptional": true
+                },
+                {
+                  "name": "GalleryResourceType",
+                  "value": "Azure Monitor",
+                  "isOptional": true
+                },
+                {
+                  "name": "PinName",
+                  "value": "HPMO-Database-Monitoring",
+                  "isOptional": true
+                },
+                {
+                  "name": "StepSettings",
+                  "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"// HPMO: Stopped SQL Server Services within the past 24 hours\\r\\nlet Alert_Threshold = 'State';\\r\\nConfigurationChange  // (relies on the Change Tracking solution): \\r\\n| where TimeGenerated > ago(24h)\\r\\n| where ConfigChangeType == \\\"WindowsServices\\\" and SvcChangeType == \\\"State\\\"\\r\\n| where SvcName contains 'MSSQL' and SvcName !contains \\\"launch\\\" and SvcName !contains \\\"OLAP\\\"\\r\\n| where SvcStartupType == \\\"Auto\\\" and SvcState != 'Running'\\r\\n| parse Computer with Computer \\\".\\\" *\\r\\n| project Server = Computer, SQLService = SvcDisplayName, ServiceState = SvcState\",\"size\":4,\"title\":\"Stopped SQL Server Services\",\"noDataMessage\":\"All SQL Server Services are up and running\",\"noDataMessageStyle\":3,\"showRefreshButton\":true,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"crossComponentResources\":[\"/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01\"]}",
+                  "isOptional": true
+                },
+                {
+                  "name": "ParameterValues",
+                  "value": {
+                    "selectedTab": {
+                      "type": 1,
+                      "value": "check",
+                      "formattedValue": "check"
+                    }
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Location",
+                  "value": "westeurope",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "model": {
+        "timeRange": {
+          "value": {
+            "relative": {
+              "duration": 24,
+              "timeUnit": 1
+            }
+          },
+          "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+        },
+        "filterLocale": {
+          "value": "en-us"
+        },
+        "filters": {
+          "value": {
+            "MsPortalFx_TimeRange": {
+              "model": {
+                "format": "local",
+                "granularity": "auto",
+                "relative": "30d"
+              },
+              "displayCache": {
+                "name": "Local Time",
+                "value": "Past 30 days"
+              },
+              "filteredPartIds": [
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2b5",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2b7",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2bf",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2c1",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2c3",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2c5",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2c7",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2c9",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2cf",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2d1",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2d3",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2d5",
+                "StartboardPart-LogsDashboardPart-be9ef5aa-f987-4e96-b03e-0b625f11a2d7",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2d9",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2db",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2dd",
+                "StartboardPart-PinnedNotebookQueryPart-be9ef5aa-f987-4e96-b03e-0b625f11a2df"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "name": "RENZ HPMO Database Dashboard v1",
+  "type": "Microsoft.Portal/dashboards",
+  "location": "INSERT LOCATION",
+  "tags": {
+    "hidden-title": "RENZ HPMO Database Dashboard v1"
+  },
+  "apiVersion": "2015-08-01-preview"
+}
