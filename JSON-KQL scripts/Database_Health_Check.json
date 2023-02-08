@@ -1,0 +1,131 @@
+{
+  "type": 12,
+  "content": {
+    "version": "NotebookGroup/1.0",
+    "groupType": "editable",
+    "items": [
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "// Events by event source \r\nlet eventIDS = dynamic([\"605\", \"823\", \"824\", \"825\", \"3414\", \"5180\", \"7105\", \"9004\"]);\r\nEvent\r\n//| where TimeGenerated >= ago(3d)\r\n| where EventID in (eventIDS)\r\n| summarize LatestErrorDate = max(TimeGenerated) by _ResourceId, Computer, EventID, RenderedDescription\r\n| project Computer, EventID, LatestErrorDate, RenderedDescription, _ResourceId\r\n| order by LatestErrorDate desc\r\n",
+          "size": 4,
+          "title": "Database Corruption Monitoring",
+          "noDataMessage": "No database integrity threats detected.",
+          "noDataMessageStyle": 3,
+          "timeContext": {
+            "durationMs": 259200000
+          },
+          "showRefreshButton": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+          ],
+          "visualization": "table",
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "EventID",
+                "formatter": 0,
+                "formatOptions": {
+                  "compositeBarSettings": {
+                    "labelText": "",
+                    "columnSettings": []
+                  },
+                  "customColumnWidthSetting": "8ch"
+                }
+              },
+              {
+                "columnMatch": "_ResourceId",
+                "formatter": 5
+              }
+            ]
+          },
+          "tileSettings": {
+            "showBorder": false,
+            "titleContent": {
+              "columnMatch": "Computer",
+              "formatter": 1
+            },
+            "leftContent": {
+              "columnMatch": "EventID",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto"
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "maximumSignificantDigits": 3,
+                  "maximumFractionDigits": 2
+                }
+              }
+            }
+          }
+        },
+        "showPin": true,
+        "name": "query - 0",
+        "styleSettings": {
+          "showBorder": true
+        }
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "// Events by event source \r\nlet eventIDS = dynamic([\"1000\",\"1001\",\"1006\",\"1057\",\"1069\",\"1070\",\"1073\",\"1080\",\"1090\",\"1092\",\"1093\",\"1105\",\"1135\",\"1146\",\"1177\",\"1181\",\"1247\",\"1248\",\"1282\",\"1542\",\"1543\",\"1546\",\"1547\",\"1553\",\"1554\",\"1556\",\"1561\",\"1641\",\"1201\",\"1024\",\"1034\",\"1035\",\"1037\",\"1038\",\"1039\",\"1040\",\"1041\",\"1042\",\"1044\",\"1046\",\"1047\",\"1048\",\"1049\",\"1050\",\"1051\",\"1052\",\"1053\",\"1054\",\"1055\",\"1069\",\"1077\",\"1078\",\"1121\",\"1127\",\"1129\",\"1130\",\"1137\",\"1138\",\"1141\",\"1142\",\"1182\",\"1183\",\"1191\",\"1192\",\"1193\",\"1194\",\"1195\",\"1196\",\"1205\",\"1206\",\"1207\",\"1208\",\"1211\",\"1212\",\"1213\",\"1214\",\"1215\",\"1218\",\"1219\",\"1220\",\"1223\",\"1226\",\"1227\",\"1228\",\"1229\",\"1230\",\"1231\",\"1232\",\"1233\",\"1234\",\"1242\",\"1245\",\"1250\",\"1254\",\"1255\",\"1256\"]);\r\nEvent\r\n//| where TimeGenerated >= ago(24h)\r\n| where EventID in (eventIDS)\r\n| where (Computer contains \"db\") or (Computer in~ (\"azsapd003\",\"azsapd007\",\"azsapd035\",\"azsapd039\",\"azsapd041\",\"azsapd044\"))\r\n| summarize LatestErrorDate = max(TimeGenerated) by _ResourceId, Computer, EventID, RenderedDescription\r\n| project Computer, EventID, LatestErrorDate, RenderedDescription //, _ResourceId\r\n| order by LatestErrorDate desc",
+          "size": 1,
+          "title": "Failover Clustering Errors",
+          "noDataMessage": "No clustering errors occured.",
+          "timeContext": {
+            "durationMs": 43200000
+          },
+          "showRefreshButton": true,
+          "showExportToExcel": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+          ]
+        },
+        "showPin": true,
+        "name": "query - 1",
+        "styleSettings": {
+          "showBorder": true
+        }
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "// HPMO: Stopped SQL Server Services within the past 24 hours\r\nlet Alert_Threshold = 'State';\r\nConfigurationChange  // (relies on the Change Tracking solution): \r\n| where TimeGenerated > ago(24h)\r\n| where ConfigChangeType == \"WindowsServices\" and SvcChangeType == \"State\"\r\n| where SvcName contains 'MSSQL' and SvcName !contains \"launch\" and SvcName !contains \"OLAP\"\r\n| where SvcStartupType == \"Auto\" and SvcState != 'Running'\r\n| parse Computer with Computer \".\" *\r\n| project Server = Computer, SQLService = SvcDisplayName, ServiceState = SvcState",
+          "size": 4,
+          "title": "Stopped SQL Server Services",
+          "noDataMessage": "All SQL Server Services are up and running",
+          "noDataMessageStyle": 3,
+          "showRefreshButton": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+          ]
+        },
+        "showPin": true,
+        "name": "query - 2",
+        "styleSettings": {
+          "showBorder": true
+        }
+      }
+    ]
+  },
+  "conditionalVisibility": {
+    "parameterName": "selectedTab",
+    "comparison": "isEqualTo",
+    "value": "check"
+  },
+  "name": "Database Monitoring",
+  "styleSettings": {
+    "showBorder": true
+  }
+}

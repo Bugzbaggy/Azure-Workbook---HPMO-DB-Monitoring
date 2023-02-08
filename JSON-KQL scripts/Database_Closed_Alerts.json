@@ -1,0 +1,707 @@
+{
+  "type": 12,
+  "content": {
+    "version": "NotebookGroup/1.0",
+    "groupType": "editable",
+    "items": [
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "parameters": [
+            {
+              "id": "1f74ed9a-e3ed-498d-bd5b-f68f3836a117",
+              "version": "KqlParameterItem/1.0",
+              "name": "Subscription",
+              "label": "Subscriptions",
+              "type": 6,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "includeAll": false,
+                "showDefault": false
+              }
+            },
+            {
+              "id": "b616a3a3-4271-4208-b1a9-a92a78efed08",
+              "version": "KqlParameterItem/1.0",
+              "name": "ResourceGroups",
+              "label": "Resource groups",
+              "type": 2,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "Resources\r\n| summarize by resourceGroup\r\n| order by resourceGroup asc\r\n| project id=resourceGroup, resourceGroup",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "selectAllValue": "*"
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "0e85e0e4-a7e8-4ea8-b291-e444c317843a",
+              "version": "KqlParameterItem/1.0",
+              "name": "ResourceTypes",
+              "label": "Resource types",
+              "type": 7,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where \"*\" in ({ResourceGroups}) or resourceGroup in ({ResourceGroups})\r\n| summarize by type\r\n| project type, label=type\r\n",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "selectAllValue": "*"
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "f60ea0a0-3703-44ca-a59b-df0246423f41",
+              "version": "KqlParameterItem/1.0",
+              "name": "Resources",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "Resources\r\n| where \"*\" in ({ResourceTypes}) or type in~({ResourceTypes})\r\n| where '*' in~({ResourceGroups}) or resourceGroup in~({ResourceGroups}) \r\n| order by name asc\r\n| extend Rank = row_number()\r\n| project value = id, label = name, selected = Rank <= 10, group = resourceGroup",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "selectAllValue": "*",
+                "defaultItemsText": "First 10"
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "015d1a5e-357f-4e01-ac77-598e7b493db0",
+              "version": "KqlParameterItem/1.0",
+              "name": "timeRange",
+              "label": "Time Range",
+              "type": 4,
+              "isRequired": true,
+              "value": {
+                "durationMs": 2592000000
+              },
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 300000
+                  },
+                  {
+                    "durationMs": 900000
+                  },
+                  {
+                    "durationMs": 1800000
+                  },
+                  {
+                    "durationMs": 3600000
+                  },
+                  {
+                    "durationMs": 14400000
+                  },
+                  {
+                    "durationMs": 43200000
+                  },
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2419200000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  }
+                ],
+                "allowCustom": true
+              }
+            },
+            {
+              "id": "bd6d6075-dc8f-43d3-829f-7e2245a3eb21",
+              "version": "KqlParameterItem/1.0",
+              "name": "State",
+              "type": 2,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "{\"version\":\"1.0.0\",\"content\":\"[ \\r\\n    {\\\"id\\\":\\\"New\\\", \\\"label\\\": \\\"New\\\"},\\r\\n    {\\\"id\\\":\\\"Acknowledged\\\", \\\"label\\\": \\\"Acknowledged\\\"},\\r\\n    {\\\"id\\\":\\\"Closed\\\", \\\"label\\\": \\\"Closed\\\"}\\r\\n]\",\"transformers\":null}",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "value": [
+                "Closed"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "selectAllValue": "*",
+                "showDefault": false
+              },
+              "queryType": 8
+            },
+            {
+              "id": "c29383f3-cb03-404f-8f6b-964f05cb9778",
+              "version": "KqlParameterItem/1.0",
+              "name": "AlertCondition",
+              "type": 2,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "{\"version\":\"1.0.0\",\"content\":\"[ \\r\\n    {\\\"id\\\":\\\"Fired\\\", \\\"label\\\": \\\"Fired\\\"},\\r\\n    {\\\"id\\\":\\\"Resolved\\\", \\\"label\\\": \\\"Resolved\\\"}\\r\\n]\",\"transformers\":null}",
+              "value": [
+                "Fired"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "showDefault": false
+              },
+              "queryType": 8
+            }
+          ],
+          "style": "above",
+          "queryType": 8
+        },
+        "name": "parameters"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "template",
+          "loadFromTemplateId": "Community-Workbooks/Common/noSubscriptions",
+          "items": []
+        },
+        "conditionalVisibility": {
+          "parameterName": "Subscription",
+          "comparison": "isEqualTo"
+        },
+        "name": "no subscriptions"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AlertsManagementResources | where type =~ 'microsoft.alertsmanagement/alerts'\r\n| where todatetime(properties.essentials.startDateTime) {timeRange}  \r\n| where \"*\" in ({ResourceGroups}) or properties.essentials.targetResourceGroup in~ ({ResourceGroups})\r\n| where \"*\" in ({ResourceTypes}) or properties.essentials.targetResourceType in~ ({ResourceTypes})\r\n| where \"*\" in ({Resources}) or properties.essentials.targetResource in~ ({Resources})\r\n| where \"*\" in ({AlertCondition}) or properties.essentials.monitorCondition in~ ({AlertCondition})\r\n| extend State=tostring(properties.essentials.alertState)\r\n| where \"*\" in ({State}) or State in ({State})\r\n| summarize Count=count(), New=countif(State==\"New\"), \r\nAcknowledged=countif(State==\"Acknowledged\"), \r\nClosed=countif(State==\"Closed\") \r\nby Severity=tostring(properties.essentials.severity)\r\n| order by Severity asc",
+                "size": 3,
+                "title": "Alert Summary",
+                "noDataMessage": "No alerts found",
+                "exportMultipleValues": true,
+                "exportedParameters": [
+                  {
+                    "fieldName": "Severity",
+                    "parameterName": "Severity",
+                    "parameterType": 1
+                  }
+                ],
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources",
+                "crossComponentResources": [
+                  "{Subscription}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "Severity",
+                      "formatter": 11
+                    },
+                    {
+                      "columnMatch": "Count",
+                      "formatter": 3,
+                      "formatOptions": {
+                        "min": 0,
+                        "palette": "blue",
+                        "aggregation": "Sum"
+                      },
+                      "numberFormat": {
+                        "unit": 17,
+                        "options": {
+                          "style": "decimal",
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "State",
+                      "formatter": 1
+                    }
+                  ]
+                }
+              },
+              "showPin": true,
+              "name": "Alert Summary"
+            },
+            {
+              "type": 1,
+              "content": {
+                "json": "💡 Select one or more severities to see more information."
+              },
+              "conditionalVisibility": {
+                "parameterName": "Severity",
+                "comparison": "isEqualTo"
+              },
+              "name": "click to select info"
+            },
+            {
+              "type": 11,
+              "content": {
+                "version": "LinkItem/1.0",
+                "style": "tabs",
+                "links": [
+                  {
+                    "id": "a9737bf7-64c6-4ebf-b605-1944829c39fc",
+                    "cellValue": "tab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "Alert Details",
+                    "subTarget": "details",
+                    "style": "link"
+                  },
+                  {
+                    "id": "4c36bb6b-5d64-4e22-b36e-6961f9ba76b2",
+                    "cellValue": "tab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "Alerts by Region",
+                    "subTarget": "location",
+                    "style": "link"
+                  }
+                ]
+              },
+              "conditionalVisibility": {
+                "parameterName": "Severity",
+                "comparison": "isNotEqualTo"
+              },
+              "name": "tabs"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AlertsManagementResources | where type =~ 'microsoft.alertsmanagement/alerts'\r\n| where (properties.context.sourceType in~ (\"SQLDataBase\", \"SAPHanaDatabase\")) or (name contains \"[Linux] Aplication disk is running out of space\") or (name contains \"[Windows] Aplication disk is running out of space\") or (name contains \"Warning High CPU Utilization\") or (name contains \"Warning Virtual Memory Utilization is High\") or (name contains \"VM is not responding\") or (name contains \"[SQL] Database Corruption Detection\")\r\n//| where properties.context.sourceType in~ (\"SQLDataBase\", \"SAPHanaDatabase\")\r\n| where todatetime(properties.essentials.startDateTime) {timeRange}\r\n//| where properties.essentials.description !in (\"Log chain is broken.\",\"Log Chain is broken.\",\"First full backup is missing for this datasource.\")  \r\n| where \"*\" in ({ResourceGroups}) or properties.essentials.targetResourceGroup in~ ({ResourceGroups})\r\n| where \"*\" in ({ResourceTypes}) or properties.essentials.targetResourceType in~ ({ResourceTypes})\r\n| where \"*\" in ({Resources}) or properties.essentials.targetResource in~ ({Resources})\r\n| where \"*\" in ({AlertCondition}) or properties.essentials.monitorCondition in~ ({AlertCondition})\r\n//| where (properties.essentials.description !contains \"SQL database does not exist\")\r\n| where (properties.essentials.description !contains \"Log chain is broken\")\r\n| where (properties.essentials.description !contains \"Failed to connect to HANA system\")\r\n| where (properties.essentials.description !contains \"First full backup is missing for this datasource\")\r\n| where (properties.essentials.description !contains  \"Operation cancelled as a conflicting operation was already running on the same datasource\")\r\n| where (properties.essentials.description !contains  \"Backup failed because a remedial backup is in progress for this datasource. Backups on this datasource will not succeed until the remedial backup is complete\")\r\n//| where (properties.essentials.description !contains  \"Operation failed because Azure Backup workload extension could not connect to required Azure endpoints due to DNS resolution failures\")\r\n| extend State=tostring(properties.essentials.alertState)\r\n| where \"*\" in ({State}) or State in ({State})\r\n| extend Computer = properties.context.context.condition.allOf[0].dimensions[0].value\r\n| extend AffectedServer1 = properties.context.affectedItems\r\n//| where AffectedServer has \"azsapddb05\"\r\n| parse AffectedServer1 with * \"virtualMachines/\" AffectedServer1 \"/\" *\r\n| extend AffectedServer = coalesce(AffectedServer1, Computer)\r\n| where (AffectedServer contains \"db\") or (AffectedServer in~ (\"azsapd003\",\"azsapd007\",\"azsapd035\",\"azsapd039\",\"azsapd041\",\"dkcdcsapp076\",\"dkcdcsapd082\",\"\"))\r\n| summarize Count=count(), New=countif(State==\"New\"), \r\nAcknowledged=countif(State==\"Acknowledged\"), \r\nClosed=countif(State==\"Closed\") \r\nby Severity=tostring(properties.essentials.severity)\r\n| order by Severity asc\r\n//| summarize count() by State=tostring(properties.essentials.alertState)",
+                "size": 4,
+                "title": "Alerts Summary",
+                "color": "redBright",
+                "noDataMessage": "No alerts found",
+                "noDataMessageStyle": 3,
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources",
+                "crossComponentResources": [
+                  "{Subscription}"
+                ],
+                "visualization": "piechart",
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "AlertId",
+                      "formatter": 5,
+                      "formatOptions": {
+                        "linkTarget": "Resource"
+                      }
+                    },
+                    {
+                      "columnMatch": "StartTime",
+                      "formatter": 6
+                    },
+                    {
+                      "columnMatch": "Severity",
+                      "formatter": 11
+                    },
+                    {
+                      "columnMatch": "State",
+                      "formatter": 1
+                    },
+                    {
+                      "columnMatch": "Name",
+                      "formatter": 1,
+                      "formatOptions": {
+                        "linkTarget": "OpenBlade",
+                        "linkIsContextBlade": true,
+                        "bladeOpenContext": {
+                          "bladeName": "AlertDetailsTemplateBlade",
+                          "extensionName": "Microsoft_Azure_Monitoring",
+                          "bladeParameters": [
+                            {
+                              "name": "alertId",
+                              "source": "column",
+                              "value": "AlertId"
+                            },
+                            {
+                              "name": "alertName",
+                              "source": "column",
+                              "value": "Name"
+                            },
+                            {
+                              "name": "invokedFrom",
+                              "source": "static",
+                              "value": "Workbooks"
+                            }
+                          ]
+                        }
+                      },
+                      "tooltipFormat": {
+                        "tooltip": "View alert details"
+                      }
+                    },
+                    {
+                      "columnMatch": "TargetResource",
+                      "formatter": 13,
+                      "formatOptions": {
+                        "linkTarget": "Resource",
+                        "subTarget": "alerts",
+                        "showIcon": true
+                      }
+                    },
+                    {
+                      "columnMatch": "essentials",
+                      "formatter": 5,
+                      "formatOptions": {
+                        "linkTarget": "CellDetails",
+                        "linkIsContextBlade": true
+                      }
+                    }
+                  ],
+                  "rowLimit": 1000
+                },
+                "tileSettings": {
+                  "titleContent": {
+                    "columnMatch": "Severity",
+                    "formatter": 1
+                  },
+                  "leftContent": {
+                    "columnMatch": "Count",
+                    "formatter": 12,
+                    "formatOptions": {
+                      "palette": "coldHot"
+                    },
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 2,
+                        "maximumSignificantDigits": 3
+                      }
+                    }
+                  },
+                  "showBorder": true,
+                  "sortCriteriaField": "Severity",
+                  "sortOrderField": 1,
+                  "size": "auto"
+                },
+                "graphSettings": {
+                  "type": 0,
+                  "topContent": {
+                    "columnMatch": "Severity",
+                    "formatter": 1
+                  },
+                  "centerContent": {
+                    "columnMatch": "Count",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "maximumSignificantDigits": 3,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  }
+                },
+                "chartSettings": {
+                  "showMetrics": false,
+                  "seriesLabelSettings": [
+                    {
+                      "seriesName": "Sev3",
+                      "color": "blue"
+                    },
+                    {
+                      "seriesName": "Sev0",
+                      "color": "red"
+                    },
+                    {
+                      "seriesName": "Sev1",
+                      "color": "orange"
+                    },
+                    {
+                      "seriesName": "Sev2",
+                      "color": "yellow"
+                    },
+                    {
+                      "seriesName": "Sev4",
+                      "color": "blueDark"
+                    }
+                  ]
+                }
+              },
+              "conditionalVisibilities": [
+                {
+                  "parameterName": "Severity",
+                  "comparison": "isNotEqualTo"
+                },
+                {
+                  "parameterName": "tab",
+                  "comparison": "isEqualTo",
+                  "value": "details"
+                },
+                {
+                  "parameterName": "sql",
+                  "comparison": "isEqualTo",
+                  "value": "no"
+                }
+              ],
+              "showPin": true,
+              "name": "Alerts Summary"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AlertsManagementResources | where type =~ 'microsoft.alertsmanagement/alerts'\r\n| where (properties.context.sourceType in~ (\"SQLDataBase\", \"SAPHanaDatabase\")) or (name contains \"[Linux] Aplication disk is running out of space\") or (name contains \"[Windows] Aplication disk is running out of space\") or (name contains \"Warning High CPU Utilization\") or (name contains \"Warning Virtual Memory Utilization is High\") or (name contains \"VM is not responding\") or (name contains \"[SQL] Database Corruption Detection\")\r\n//| where name contains \"Warning Virtual Memory Utilization is High\"\r\n| where todatetime(properties.essentials.startDateTime) {timeRange}  \r\n| extend Severity=tostring(properties.essentials.severity)\r\n| where Severity in ({Severity}) or Severity contains \"Sev\"\r\n| extend State=tostring(properties.essentials.alertState)\r\n| where \"*\" in ({State}) or State in ({State})\r\n| where \"*\" in ({ResourceTypes}) or properties.essentials.targetResourceType in~ ({ResourceTypes})\r\n| where \"*\" in ({ResourceGroups}) or properties.essentials.targetResourceGroup in~ ({ResourceGroups})\r\n| where \"*\" in ({Resources}) or properties.essentials.targetResource in~ ({Resources})\r\n| where \"*\" in ({AlertCondition}) or properties.essentials.monitorCondition in~ ({AlertCondition})\r\n//| where (properties.essentials.description !contains \"SQL database does not exist\")\r\n| where (properties.essentials.description !contains \"Log chain is broken\")\r\n| where (properties.essentials.description !contains \"Failed to connect to HANA system\")\r\n| where (properties.essentials.description !contains \"First full backup is missing for this datasource\")\r\n| where (properties.essentials.description !contains  \"Operation cancelled as a conflicting operation was already running on the same datasource\")\r\n| where (properties.essentials.description !contains  \"Backup failed because a remedial backup is in progress for this datasource. Backups on this datasource will not succeed until the remedial backup is complete\")\r\n//| where (properties.essentials.description !contains  \"Operation failed because Azure Backup workload extension could not connect to required Azure endpoints due to DNS resolution failures\")\r\n| extend Computer = properties.context.context.condition.allOf[0].dimensions[0].value\r\n| extend AffectedServer1 = properties.context.affectedItems\r\n//| where AffectedServer has \"azsapddb05\"\r\n| parse AffectedServer1 with * \"virtualMachines/\" AffectedServer1 \"/\" *\r\n| project AlertId=id, StartTime=todatetime(tostring(properties.essentials.startDateTime)), Severity, State=tostring(properties.essentials.alertState), AlertName=name, AffectedServer = coalesce(AffectedServer1, Computer), Description=tostring(properties.essentials.description), Updatedby=tostring(properties.essentials.lastModifiedUserName)\r\n| where (AffectedServer contains \"db\") or (AffectedServer in~ (\"azsapd003\",\"azsapd007\",\"azsapd035\",\"azsapd039\",\"azsapd041\",\"dkcdcsapp076\",\"dkcdcsapd082\",\"\"))\r\n| order by StartTime desc\r\n",
+                "size": 0,
+                "title": "Closed Alerts",
+                "noDataMessage": "No alerts found",
+                "noDataMessageStyle": 3,
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources",
+                "crossComponentResources": [
+                  "{Subscription}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "AlertId",
+                      "formatter": 5,
+                      "formatOptions": {
+                        "linkTarget": "Resource"
+                      }
+                    },
+                    {
+                      "columnMatch": "StartTime",
+                      "formatter": 6
+                    },
+                    {
+                      "columnMatch": "Severity",
+                      "formatter": 11
+                    },
+                    {
+                      "columnMatch": "State",
+                      "formatter": 1
+                    },
+                    {
+                      "columnMatch": "Name",
+                      "formatter": 1,
+                      "formatOptions": {
+                        "linkTarget": "OpenBlade",
+                        "linkIsContextBlade": true,
+                        "bladeOpenContext": {
+                          "bladeName": "AlertDetailsTemplateBlade",
+                          "extensionName": "Microsoft_Azure_Monitoring",
+                          "bladeParameters": [
+                            {
+                              "name": "alertId",
+                              "source": "column",
+                              "value": "AlertId"
+                            },
+                            {
+                              "name": "alertName",
+                              "source": "column",
+                              "value": "Name"
+                            },
+                            {
+                              "name": "invokedFrom",
+                              "source": "static",
+                              "value": "Workbooks"
+                            }
+                          ]
+                        }
+                      },
+                      "tooltipFormat": {
+                        "tooltip": "View alert details"
+                      }
+                    },
+                    {
+                      "columnMatch": "TargetResource",
+                      "formatter": 13,
+                      "formatOptions": {
+                        "linkTarget": "Resource",
+                        "subTarget": "alerts",
+                        "showIcon": true
+                      }
+                    },
+                    {
+                      "columnMatch": "essentials",
+                      "formatter": 5,
+                      "formatOptions": {
+                        "linkTarget": "CellDetails",
+                        "linkIsContextBlade": true
+                      }
+                    }
+                  ],
+                  "rowLimit": 1000,
+                  "filter": true
+                }
+              },
+              "customWidth": "70",
+              "conditionalVisibilities": [
+                {
+                  "parameterName": "Severity",
+                  "comparison": "isNotEqualTo"
+                },
+                {
+                  "parameterName": "tab",
+                  "comparison": "isEqualTo",
+                  "value": "details"
+                }
+              ],
+              "showPin": true,
+              "name": "Alerts for severity"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AlertsManagementResources | where type =~ 'microsoft.alertsmanagement/alerts'\r\n| where todatetime(properties.essentials.startDateTime) {timeRange}  \r\n| extend Severity=tostring(properties.essentials.severity)\r\n| where Severity in ({Severity})\r\n| extend State=tostring(properties.essentials.alertState)\r\n| where \"*\" in ({State}) or State in ({State})\r\n| where \"*\" in ({ResourceTypes}) or properties.essentials.targetResourceType in~ ({ResourceTypes})\r\n| where \"*\" in ({ResourceGroups}) or properties.essentials.targetResourceGroup in~ ({ResourceGroups})\r\n| where \"*\" in ({Resources}) or properties.essentials.targetResource in~ ({Resources})\r\n| summarize Alerts=count(), New=countif(State==\"New\"), \r\nAcknowledged=countif(State==\"Acknowledged\"), \r\nClosed=countif(State==\"Closed\")\r\nby Resource=tostring(properties.essentials.targetResource )\r\n| order by Alerts desc\r\n",
+                "size": 0,
+                "title": "{Severity} Alerts by Region",
+                "noDataMessage": "No alerts found",
+                "exportMultipleValues": true,
+                "exportAggregateParts": true,
+                "exportedParameters": [
+                  {
+                    "parameterName": "Selected",
+                    "parameterType": 1,
+                    "quote": ""
+                  }
+                ],
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources",
+                "crossComponentResources": [
+                  "{Subscription}"
+                ],
+                "visualization": "map",
+                "gridSettings": {
+                  "rowLimit": 1000
+                },
+                "mapSettings": {
+                  "locInfo": "AzureResource",
+                  "locInfoColumn": "Resource",
+                  "sizeSettings": "Alerts",
+                  "sizeAggregation": "Sum",
+                  "defaultSize": 0,
+                  "legendMetric": "Alerts",
+                  "legendAggregation": "Sum",
+                  "itemColorSettings": {
+                    "nodeColorField": "Alerts",
+                    "colorAggregation": "Sum",
+                    "type": "heatmap",
+                    "heatmapPalette": "greenRed"
+                  }
+                }
+              },
+              "conditionalVisibilities": [
+                {
+                  "parameterName": "Severity",
+                  "comparison": "isNotEqualTo"
+                },
+                {
+                  "parameterName": "tab",
+                  "comparison": "isEqualTo",
+                  "value": "location"
+                }
+              ],
+              "showPin": true,
+              "name": "Alerts map"
+            },
+            {
+              "type": 1,
+              "content": {
+                "json": "💡 Select one or more regions to see Azure resources with alerts in those regions."
+              },
+              "conditionalVisibilities": [
+                {
+                  "parameterName": "Selected",
+                  "comparison": "isEqualTo"
+                },
+                {
+                  "parameterName": "tab",
+                  "comparison": "isEqualTo",
+                  "value": "location"
+                },
+                {
+                  "parameterName": "Severity",
+                  "comparison": "isNotEqualTo"
+                }
+              ],
+              "name": "map selection text"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "Subscription",
+          "comparison": "isNotEqualTo"
+        },
+        "name": "visible if subscriptions selected"
+      }
+    ]
+  },
+  "conditionalVisibility": {
+    "parameterName": "selectedTab",
+    "comparison": "isEqualTo",
+    "value": "alert"
+  },
+  "name": "Closed DB Alerts"
+}

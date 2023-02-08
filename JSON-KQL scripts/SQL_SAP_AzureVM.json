@@ -1,0 +1,242 @@
+{
+  "type": 12,
+  "content": {
+    "version": "NotebookGroup/1.0",
+    "groupType": "editable",
+    "items": [
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "print banner=strcat(\"SQL Server\"), banner1=strcat(\"and SAP HANA\"), banner2=strcat(\"in Azure VM\"), X = \"Virtual Machines List\"\r\n",
+                "size": 3,
+                "color": "green",
+                "timeContext": {
+                  "durationMs": 86400000
+                },
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+                ],
+                "visualization": "tiles",
+                "tileSettings": {
+                  "titleContent": {
+                    "columnMatch": "banner",
+                    "formatter": 12,
+                    "formatOptions": {
+                      "palette": "blue",
+                      "compositeBarSettings": {
+                        "labelText": "",
+                        "columnSettings": [
+                          {
+                            "columnName": "banner",
+                            "color": "orange"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "subtitleContent": {
+                    "columnMatch": "banner1",
+                    "formatter": 12,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  "leftContent": {
+                    "columnMatch": "banner2",
+                    "formatter": 12,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  "rightContent": {
+                    "columnMatch": "banner3",
+                    "formatter": 12,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  "secondaryContent": {
+                    "columnMatch": "X",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "Virtual",
+                          "representation": "Hyperlink",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  "showBorder": true,
+                  "size": "auto"
+                },
+                "textSettings": {
+                  "style": "bignumber"
+                }
+              },
+              "customWidth": "0",
+              "conditionalVisibility": {
+                "parameterName": "SQL",
+                "comparison": "isEqualTo",
+                "value": "N"
+              },
+              "showPin": true,
+              "name": "query - 3"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "// Run query to see results.\r\nresources\r\n| where type =~ 'Microsoft.SqlVirtualMachine/SqlVirtualMachines'\r\n| extend Environment = case(subscriptionId =~ \"2df031a7-e21f-49c7-b61e-b0bb3e097c79\", 'DEV',\r\n    subscriptionId =~ \"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\", 'PRD',\r\n    subscriptionId =~ \"cbb944ea-aa79-4701-909a-e114ab57ad7a\", 'TST',\r\n    \"--\")\r\n| extend p = parse_json(properties)\r\n| extend version = iff(isnotempty(p.sqlImageOffer), p.sqlImageOffer, \"--\"),\r\n    edition = iff(isnotempty(p.sqlImageSku), p.sqlImageSku, \"--\"),\r\n    managementMode = case(p.sqlManagement =~ \"Full\", 'Full mode',\r\n        p.sqlManagement =~ \"LightWeight\", 'Light weight mode',\r\n        p.sqlManagement =~ \"NoAgent\", 'No agent mode',\r\n        p.sqlManagement =~ \"NotSet\", 'Not set',\r\n        \"--\"),\r\n    licenseType = case(p.sqlServerLicenseType =~ \"PAYG\", \"Pay As You Go\",\r\n        p.sqlServerLicenseType =~ \"AHUB\", \"Azure Hybrid Benefit\",\r\n        p.sqlServerLicenseType =~ \"DR\", \"HA/DR\",\r\n        \"--\")\r\n| project id, name, Environment, resourceGroup, version, edition, managementMode, licenseType,  location\r\n//| where subscriptionId contains 'dev'\r\n| sort by name asc ",
+                "size": 0,
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources",
+                "crossComponentResources": [
+                  "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                  "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                  "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                ]
+              },
+              "customWidth": "0",
+              "conditionalVisibility": {
+                "parameterName": "SQL",
+                "comparison": "isEqualTo",
+                "value": "N"
+              },
+              "name": "SQLVM",
+              "styleSettings": {
+                "margin": "0",
+                "padding": "0",
+                "maxWidth": "100",
+                "showBorder": true
+              }
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "// Run query to see results.\r\nresources\r\n| where type =~ 'microsoft.compute/virtualmachines'\r\n| where name in~ (\"azsapd007\",\"azsapd035\",\"azsapd039\" )//\"azsapqdb03\"\"azsapddb07\",)\r\n| extend Environment = case(subscriptionId =~ \"2df031a7-e21f-49c7-b61e-b0bb3e097c79\", 'DEV',\r\n    subscriptionId =~ \"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\", 'PRD',\r\n    subscriptionId =~ \"cbb944ea-aa79-4701-909a-e114ab57ad7a\", 'TST',\r\n    \"--\")\r\n| extend p = parse_json(properties)\r\n| extend version = iff(isnotempty(p.sqlImageOffer), p.sqlImageOffer, \"--\"),\r\n    edition = iff(isnotempty(p.sqlImageSku), p.sqlImageSku, \"--\"),\r\n    managementMode = case(p.sqlManagement =~ \"Full\", 'Full mode',\r\n        p.sqlManagement =~ \"LightWeight\", 'Light weight mode',\r\n        p.sqlManagement =~ \"NoAgent\", 'No agent mode',\r\n        p.sqlManagement =~ \"NotSet\", 'Not set',\r\n        \"--\"),\r\n    licenseType = case(p.sqlServerLicenseType =~ \"PAYG\", \"Pay As You Go\",\r\n        p.sqlServerLicenseType =~ \"AHUB\", \"Azure Hybrid Benefit\",\r\n        p.sqlServerLicenseType =~ \"DR\", \"HA/DR\",\r\n        \"--\")\r\n| project id, name, Environment, resourceGroup, version, edition, managementMode, licenseType,  location\r\n| sort by name asc\r\n\r\n",
+                "size": 0,
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources",
+                "crossComponentResources": [
+                  "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a",
+                  "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                  "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79"
+                ]
+              },
+              "customWidth": "0",
+              "conditionalVisibility": {
+                "parameterName": "SQL",
+                "comparison": "isEqualTo",
+                "value": "N"
+              },
+              "showPin": false,
+              "name": "VM",
+              "styleSettings": {
+                "maxWidth": "100"
+              }
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\",\"mergeType\":\"union\",\"leftTable\":\"VM\",\"rightTable\":\"SQLVM\"}],\"projectRename\":[{\"originalName\":\"id\",\"mergedName\":\"id\",\"fromId\":\"unknown\"},{\"originalName\":\"name\",\"mergedName\":\"name\",\"fromId\":\"unknown\"},{\"originalName\":\"Environment\",\"mergedName\":\"Environment\",\"fromId\":\"unknown\"},{\"originalName\":\"resourceGroup\",\"mergedName\":\"resourceGroup\",\"fromId\":\"unknown\"},{\"originalName\":\"version\",\"mergedName\":\"version\",\"fromId\":\"unknown\"},{\"originalName\":\"edition\",\"mergedName\":\"edition\",\"fromId\":\"unknown\"},{\"originalName\":\"managementMode\",\"mergedName\":\"managementMode\",\"fromId\":\"unknown\"},{\"originalName\":\"licenseType\",\"mergedName\":\"licenseType\",\"fromId\":\"unknown\"},{\"originalName\":\"location\",\"mergedName\":\"location\",\"fromId\":\"unknown\"},{\"originalName\":\"[VM].id\",\"mergedName\":\"id1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"},{\"originalName\":\"[VM].name\",\"mergedName\":\"name1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"},{\"originalName\":\"[VM].Environment\",\"mergedName\":\"Environment1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"},{\"originalName\":\"[VM].resourceGroup\",\"mergedName\":\"resourceGroup1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"},{\"originalName\":\"[VM].version\",\"mergedName\":\"version1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"},{\"originalName\":\"[VM].edition\",\"mergedName\":\"edition1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"},{\"originalName\":\"[VM].managementMode\",\"mergedName\":\"managementMode1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"},{\"originalName\":\"[VM].licenseType\",\"mergedName\":\"licenseType1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"},{\"originalName\":\"[VM].location\",\"mergedName\":\"location1\",\"fromId\":\"8a3f7708-d558-48a0-937d-6ca5796cb070\"}]}",
+                "size": 3,
+                "title": "SQL Servers Installed",
+                "queryType": 7,
+                "visualization": "table",
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "name",
+                      "formatter": 5
+                    },
+                    {
+                      "columnMatch": "Environment",
+                      "formatter": 5
+                    }
+                  ],
+                  "filter": true,
+                  "hierarchySettings": {
+                    "treeType": 1,
+                    "groupBy": [
+                      "Environment"
+                    ],
+                    "expandTopLevel": false
+                  }
+                }
+              },
+              "customWidth": "75",
+              "showPin": true,
+              "name": "SQL",
+              "styleSettings": {
+                "showBorder": true
+              }
+            }
+          ]
+        },
+        "name": "VMs with SQL Installed"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "// Run query to see results.\r\nresources\r\n| where type =~ 'microsoft.compute/virtualmachines'\r\n//| where name in~ (\"azsappdb03\",\"azsappdb04\",\"azsappdb05\",\"azsappdb06\",\"azsapddb03\",\"azsapddb05\",\"azsapddb06\",\"azsapqdb04\",\"azsapqdb16\")\r\n| extend Environment = case(subscriptionId =~ \"2df031a7-e21f-49c7-b61e-b0bb3e097c79\", 'DEV',\r\n    subscriptionId =~ \"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\", 'PRD',\r\n    subscriptionId =~ \"cbb944ea-aa79-4701-909a-e114ab57ad7a\", 'TST',\r\n    \"--\")\r\n//| extend p = parse_json(properties)\r\n//| extend OS = p.extended.osName\r\n//        Version = p.extended.osVerion\r\n| where properties.storageProfile has \"RHEL-SAP-HA\"\r\n| project id, name, Environment, OS = properties.extended.instanceView.osName, Version = properties.extended.instanceView.osVersion, resourceGroup, location\r\n| sort by name asc\r\n\r\n",
+          "size": 3,
+          "title": "VMs with SAPHANA DB",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources",
+          "crossComponentResources": [
+            "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a",
+            "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+            "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79"
+          ],
+          "visualization": "table",
+          "gridSettings": {
+            "filter": true,
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "Environment"
+              ],
+              "expandTopLevel": false
+            }
+          },
+          "tileSettings": {
+            "showBorder": false
+          }
+        },
+        "customWidth": "75",
+        "name": "query - 1",
+        "styleSettings": {
+          "showBorder": true
+        }
+      }
+    ]
+  },
+  "conditionalVisibility": {
+    "parameterName": "selectedTab",
+    "comparison": "isEqualTo",
+    "value": "list"
+  },
+  "name": "DB Servers"
+}

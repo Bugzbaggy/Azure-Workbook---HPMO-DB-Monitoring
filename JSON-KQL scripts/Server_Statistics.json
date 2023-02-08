@@ -1,0 +1,236 @@
+{
+  "type": 12,
+  "content": {
+    "version": "NotebookGroup/1.0",
+    "groupType": "editable",
+    "loadType": "always",
+    "items": [
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "// Chart CPU if its under nn% over the past nn days/hours\nlet setpctValue = 85;\n// enter a % value to check\nlet startDate = ago(1h);\n// enter how many days/hours to look back on\nPerf\n| where TimeGenerated > startDate\n| where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize PCT90CPUPercentTime = percentile(CounterValue, 90) by Computer\n| where PCT90CPUPercentTime >= setpctValue\n| summarize max(PCT90CPUPercentTime) by Computer\n| join\n(\nPerf\n| where TimeGenerated > startDate\n| where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n)\non Computer\n| where (Computer contains \"db\") or (Computer in~ (\"azsapd003\",\"azsapd007\",\"azsapd035\",\"azsapd039\",\"azsapd041\",\"azsapd044\"))\n| make-series PCT90CPUPercentTime = percentile(CounterValue, 90) on TimeGenerated from ago( 1h ) to now() step 5m by Computer\n| render timechart\n\n",
+          "size": 1,
+          "aggregation": 5,
+          "title": "High CPU Servers",
+          "noDataMessage": "CPU utilizations are normal.",
+          "timeContext": {
+            "durationMs": 86400000
+          },
+          "showRefreshButton": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+          ],
+          "chartSettings": {
+            "xAxis": "TimeGenerated",
+            "showLegend": true,
+            "customThresholdLine": "75",
+            "customThresholdLineStyle": 4
+          }
+        },
+        "showPin": true,
+        "name": "High CPU SQL Servers",
+        "styleSettings": {
+          "showBorder": true
+        }
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "let free_memory_percent = Perf\n    | where CounterName == \"% Committed Bytes In Use\"\n    | summarize arg_max(TimeGenerated, CounterValue) by Computer\n    | project TimeGenerated, Computer, free_memory_percent=100 - CounterValue;\nlet free_memory_gigs = Perf\n    | where CounterName == \"Available MBytes\"\n    | summarize arg_max(TimeGenerated, CounterValue) by Computer\n    | project TimeGenerated, Computer, Free_Memory_GB=(round(CounterValue / 1024, 2));\nfree_memory_gigs \n| join kind= innerunique(free_memory_percent) on Computer\n| where TimeGenerated > ago(3m) \n//| where time_diff=abs((TimeGenerated-TimeGenerated1)/1m)<1\n| where Computer contains \"db\"\n| project\n    Computer,\n    FreeMemoryG = Free_Memory_GB,\n    //Total_GB=(round((Free_Memory_GB * 100) / free_memory_percent, 2)),\n    MemoryUsage=(100 * ((round((Free_Memory_GB * 100) / free_memory_percent, 2)) - Free_Memory_GB)) / (round((Free_Memory_GB * 100) / free_memory_percent, 2))\n//| project TimeGenerated, Computer, Free_Memory_GB, Total_GB=(round((Free_Memory_GB*100)/free_memory_percent,2))\n| sort by MemoryUsage desc  \n| top 10 by MemoryUsage\n\n",
+          "size": 0,
+          "title": "Memory Consumption",
+          "timeContext": {
+            "durationMs": 86400000
+          },
+          "showRefreshButton": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourcegroups/dch-coremgmt-rg/providers/microsoft.operationalinsights/workspaces/weu-prod-dch-log01"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "MemoryUsage",
+                "formatter": 4,
+                "formatOptions": {
+                  "min": 1,
+                  "max": 100,
+                  "palette": "blue",
+                  "aggregation": "Average"
+                }
+              }
+            ]
+          }
+        },
+        "showPin": true,
+        "name": "query - 6",
+        "styleSettings": {
+          "showBorder": true
+        }
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "let data_disk_threshold_percent = 10;\nlet os_disk_threshold_percent = 10;\nlet disk_free_space_percent=\nPerf \n| where TimeGenerated > ago(10m)\n| where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\" \n| summarize (TimeGenerated, Free_Space_Percent)=arg_max(TimeGenerated, CounterValue) by Computer, InstanceName \n| where strlen(InstanceName) ==2 and InstanceName contains \":\";\nlet disk_free_MB=\nPerf \n| where TimeGenerated > ago(10m)\n| where ObjectName == \"LogicalDisk\" and CounterName == \"Free Megabytes\" \n| summarize (TimeGenerated, Free_MB)=arg_max(TimeGenerated, CounterValue) by Computer, InstanceName \n| where strlen(InstanceName) ==2 and InstanceName contains \":\";\ndisk_free_space_percent \n| join (\n   disk_free_MB \n) on Computer, InstanceName\n| extend Used_Space_Percent = round(100 - Free_Space_Percent)\n| extend Alert_Threshold = case(InstanceName == 'C:', os_disk_threshold_percent, data_disk_threshold_percent)\n| where (InstanceName in ('C:', 'D:') and Free_Space_Percent <= os_disk_threshold_percent) \n        or (InstanceName !in ('C:', 'D:') and Free_Space_Percent <= data_disk_threshold_percent)\n| parse Computer with Computer \".\" *\n| project Server = Computer, Drive = InstanceName, UsedSpacePCT = Used_Space_Percent, FreeSpacePCT = Free_Space_Percent , Free_MB\n//| project Server = Computer, InstanceName, UsedSpacePCT = Used_Space_Percent, FreeSpacePCT = Free_Space_Percent , Free_MB\n//| where ((InstanceName !in (\"C:\",\"D:\",\"Z:\",\"S:\") and Used_Space_Percent > 90)\n| where ((Drive !contains \"C:\" and Drive !contains \"D:\" and Drive !contains \"S:\") and UsedSpacePCT > 90) //or ((InstanceName <> \"C:\" and InstanceName <> \"D:\") and Used_Space_Percent >= 95)\n| where (Server contains \"db\") or (Server in~ (\"azsapd003\",\"azsapd007\",\"azsapd035\",\"azsapd039\",\"azsapd041\",\"azsapd044\",\"dkcdcsapp076\",\"dkcdcsapd082\"))",
+          "size": 1,
+          "title": "Windows Critical DIsk Space",
+          "noDataMessage": "No critical disk space detected.",
+          "timeContext": {
+            "durationMs": 86400000
+          },
+          "showRefreshButton": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "UsedSpacePCT",
+                "formatter": 3,
+                "formatOptions": {
+                  "min": 1,
+                  "max": 100,
+                  "palette": "greenRed"
+                }
+              },
+              {
+                "columnMatch": "Used_Space_Percent",
+                "formatter": 3,
+                "formatOptions": {
+                  "min": 1,
+                  "max": 100,
+                  "palette": "greenRed"
+                }
+              }
+            ]
+          }
+        },
+        "showPin": true,
+        "name": "SQL Disk Space Usage",
+        "styleSettings": {
+          "showBorder": true
+        }
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "let disk_free_space_percent=\n    Perf \n    | where TimeGenerated > ago(10m)\n    | where ObjectName == \"Logical Disk\" and CounterName == \"% Used Space\"\n    | summarize (TimeGenerated, Used_Space_Percent)=arg_max(TimeGenerated, CounterValue) by Computer, InstanceName \n    | where strlen(InstanceName) == 2 and (InstanceName contains \":\") or (InstanceName contains \"/\");\nlet disk_free_MB=\n    Perf \n    | where TimeGenerated > ago(10m)\n    | where ObjectName == \"Logical Disk\" and CounterName == \"Free Megabytes\" \n    | summarize (TimeGenerated, Free_MB)=arg_max(TimeGenerated, CounterValue) by Computer, InstanceName \n    | where strlen(InstanceName) == 2 and (InstanceName contains \":\") or (InstanceName contains \"/\");\ndisk_free_space_percent \n| join (\n    disk_free_MB \n    )\n    on Computer, InstanceName\n//| extend Used_Space_Percent = round(100 - Free_Space_Percent)\n//| parse InstanceName with InstanceName \"/\" *\n| project Server = Computer, Drive = InstanceName, UsedSpacePCT = Used_Space_Percent, Free_MB\n| where Server in~ (\"azsappdb03\",\"azsappdb04\",\"azsappdb05\",\"azsappdb06\",\"azsappdb21\",\"azsappdb28\",\"azsappdb29\",\"azsapddb03\",\"azsapddb05\",\"azsapddb06\",\"azsapddb10\",\"azsapddb11\",\"azsapddb15\",\"azsapqdb04\",\"azsapqdb16\")\n| where UsedSpacePCT >= 90\n| where Drive in~ (\"/usr/sap\",\"/hana/log\",\"/hana/shared\",\"/hana/backup\",\"/hana/data\")\n| order by UsedSpacePCT desc \n",
+          "size": 1,
+          "title": "Linux Critical Disk Space",
+          "noDataMessage": "No critical disk space detected.",
+          "timeContext": {
+            "durationMs": 86400000
+          },
+          "showRefreshButton": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+          ],
+          "visualization": "table",
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "UsedSpacePCT",
+                "formatter": 3,
+                "formatOptions": {
+                  "min": 1,
+                  "max": 100,
+                  "palette": "greenRed"
+                }
+              },
+              {
+                "columnMatch": "Computer",
+                "formatter": 1
+              },
+              {
+                "columnMatch": "Used_Space_Percent",
+                "formatter": 3,
+                "formatOptions": {
+                  "min": 1,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "compositeBarSettings": {
+                    "labelText": "",
+                    "columnSettings": []
+                  }
+                }
+              }
+            ]
+          },
+          "sortBy": []
+        },
+        "showPin": true,
+        "name": "query - 2",
+        "styleSettings": {
+          "showBorder": true
+        }
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "// Events by event source \r\nlet eventIDS = dynamic([\"41\", \"1074\", \"1076\"]);\r\nEvent\r\n| where TimeGenerated >= ago(24h)\r\n| where EventID in (eventIDS)\r\n| where (Computer contains \"db\") or (Computer in~ (\"azsapd003\",\"azsapd007\",\"azsapd035\",\"azsapd039\",\"azsapd041\"))\r\n| summarize LatestErrorDate = max(TimeGenerated) by _ResourceId, Computer, EventID, RenderedDescription\r\n| project Computer, EventID, LatestErrorDate, RenderedDescription//, _ResourceId\r\n| order by LatestErrorDate desc",
+          "size": 0,
+          "title": "VM Shutdown and Restart Log",
+          "noDataMessage": "No restart and/or shutdown occured.",
+          "showRefreshButton": true,
+          "showExportToExcel": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+          ]
+        },
+        "showPin": true,
+        "name": "query - 3",
+        "styleSettings": {
+          "showBorder": true
+        }
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "// Events by event source \r\nlet eventIDS = dynamic([\"19\", \"43\", \"44\"]);\r\nEvent\r\n//| where TimeGenerated >= ago(3d)\r\n| where EventID in (eventIDS)\r\n| where (Computer contains \"db\") or (Computer in~ (\"azsapd003\",\"azsapd007\",\"azsapd035\",\"azsapd039\",\"azsapd041\",\"azsapd044\"))\r\n| summarize LatestErrorDate = max(TimeGenerated) by _ResourceId, Computer, EventID, RenderedDescription\r\n| project Computer, EventID, LatestErrorDate, RenderedDescription//, _ResourceId\r\n| order by LatestErrorDate desc\r\n",
+          "size": 0,
+          "title": "Windows Update Log",
+          "timeContext": {
+            "durationMs": 86400000
+          },
+          "showRefreshButton": true,
+          "showExportToExcel": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563/resourceGroups/dch-coremgmt-rg/providers/Microsoft.OperationalInsights/workspaces/weu-prod-dch-log01"
+          ],
+          "gridSettings": {
+            "rowLimit": 2000,
+            "filter": true
+          }
+        },
+        "showPin": true,
+        "name": "query - 4",
+        "styleSettings": {
+          "showBorder": true
+        }
+      }
+    ]
+  },
+  "conditionalVisibility": {
+    "parameterName": "selectedTab",
+    "comparison": "isEqualTo",
+    "value": "stat"
+  },
+  "name": "Server Statistics"
+}

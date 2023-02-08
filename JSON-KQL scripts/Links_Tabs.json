@@ -1,0 +1,58 @@
+{
+  "type": 11,
+  "content": {
+    "version": "LinkItem/1.0",
+    "style": "nav",
+    "links": [
+      {
+        "id": "aaed2293-1387-42d1-a90c-237755c6ec3e",
+        "cellValue": "selectedTab",
+        "linkTarget": "parameter",
+        "linkLabel": "DB Backup Reporting",
+        "subTarget": "report",
+        "style": "primary"
+      },
+      {
+        "id": "472c33f9-caa8-4aaa-ac3a-ab87226cd581",
+        "cellValue": "selectedTab",
+        "linkTarget": "parameter",
+        "linkLabel": "Database Backup Status",
+        "subTarget": "backup",
+        "style": "primary"
+      },
+      {
+        "id": "8708e269-ddf9-48c9-b15b-4d94c40fbe53",
+        "cellValue": "selectedTab",
+        "linkTarget": "parameter",
+        "linkLabel": "Database Alerts",
+        "subTarget": "alert",
+        "style": "primary"
+      },
+      {
+        "id": "e0808e86-5607-4964-8726-0da6a43cddc2",
+        "cellValue": "selectedTab",
+        "linkTarget": "parameter",
+        "linkLabel": "Server Statistics",
+        "subTarget": "stat",
+        "style": "primary"
+      },
+      {
+        "id": "6bb9a944-1bee-4214-88d8-8b1e540c7470",
+        "cellValue": "selectedTab",
+        "linkTarget": "parameter",
+        "linkLabel": "Database Health Check",
+        "subTarget": "check",
+        "style": "primary"
+      },
+      {
+        "id": "d5c7344b-8787-42fa-9ca8-e218cbc465ae",
+        "cellValue": "selectedTab",
+        "linkTarget": "parameter",
+        "linkLabel": "SQL & SAP HANA in Azure VM",
+        "subTarget": "list",
+        "style": "primary"
+      }
+    ]
+  },
+  "name": "links - 0"
+}

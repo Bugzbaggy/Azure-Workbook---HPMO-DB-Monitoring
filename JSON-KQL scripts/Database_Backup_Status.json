@@ -1,0 +1,713 @@
+{
+  "type": 12,
+  "content": {
+    "version": "NotebookGroup/1.0",
+    "groupType": "editable",
+    "items": [
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "title": "SQL-SAPHANA Overall Backup Health Status",
+          "items": [
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "recoveryservicesresources\r\n| where type == \"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\"\r\n| where properties.dataSourceInfo.datasourceType in~ ('SQLDatabase','SAPHanaDatabase')\r\n//| where properties.protectedItemType == 'AzureVmWorkloadSQLDatabase'\r\n| where properties.policyInfo.name in~  ('CorePolicy-SQL', 'CorePolicy-HANA')\r\n| project properties.serverName, name, properties.policyInfo.name, Status=properties.protectedItemHealthStatus, properties.lastBackupTime\r\n| summarize Total=count() by tostring(Status)",
+                "size": 4,
+                "title": "SQL & SAP HANA",
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources",
+                "crossComponentResources": [
+                  "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                  "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                  "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                ],
+                "visualization": "tiles",
+                "tileSettings": {
+                  "titleContent": {
+                    "formatter": 1
+                  },
+                  "leftContent": {
+                    "columnMatch": "Status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "Healthy",
+                          "representation": "green",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "Unhealthy",
+                          "representation": "redBright",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "NotReachable",
+                          "representation": "gray",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "blue",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    },
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 2,
+                        "maximumSignificantDigits": 3
+                      }
+                    }
+                  },
+                  "rightContent": {
+                    "columnMatch": "Total",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": null,
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  "showBorder": false,
+                  "size": "full"
+                }
+              },
+              "conditionalVisibility": {
+                "parameterName": "sql",
+                "comparison": "isEqualTo",
+                "value": "n"
+              },
+              "showPin": true,
+              "name": "query - 5"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "recoveryservicesresources\r\n| where type == \"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\"\r\n| extend InstanceOrAOAG = case(isnotnull(properties.serverName),strcat(properties.serverName,'/', properties.parentName), 'NA')\r\n| extend DBType = case(InstanceOrAOAG contains \"AG\", 'Always on AG',\r\n                                    (InstanceOrAOAG contains \"DB\") or (InstanceOrAOAG contains \"azsapd003\") or (InstanceOrAOAG contains \"azsapd007\") or (InstanceOrAOAG contains \"azsapddb04\") or (InstanceOrAOAG contains \"azsapddb07\") or (InstanceOrAOAG contains \"azsapd035\") or (InstanceOrAOAG contains \"dkcdcsapp076\") or (InstanceOrAOAG contains \"dkcdcsapd082\") or (InstanceOrAOAG contains \"dkcdcsapd976\") or (InstanceOrAOAG contains \"azsapd041\"), 'Standalone Instance',\r\n                                    \"--\")\r\n| where properties.dataSourceInfo.datasourceType in~ ('SQLDatabase','SAPHanaDatabase')\r\n//| where properties.protectedItemType == 'AzureVmWorkloadSQLDatabase'\r\n| where properties.policyInfo.name in~  ('CorePolicy-SQL', 'CorePolicy-HANA')\r\n| project ServerName = properties.serverName, DatabaseName = name, DBType, HealthStatus=properties.protectedItemHealthStatus, ProtectState = properties.protectionState, Policy = properties.policyInfo.name, LastBackupTime = properties.lastBackupTime //BackupStatus=properties.lastBackupStatus\r\n| sort by tostring(HealthStatus) desc\r\n//| summarize count() by  BackupStatus = tostring(properties_lastBackupStatus)",
+                "size": 0,
+                "title": "Backup Items",
+                "showRefreshButton": true,
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources",
+                "crossComponentResources": [
+                  "/subscriptions/cf49a21b-2b75-4240-b62b-2f5b04f53563",
+                  "/subscriptions/ce5302c7-4de2-4fab-affe-786447c1684c",
+                  "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a",
+                  "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                  "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79"
+                ],
+                "gridSettings": {
+                  "rowLimit": 1000,
+                  "filter": true
+                }
+              },
+              "customWidth": "75",
+              "showPin": true,
+              "name": "Backup Items",
+              "styleSettings": {
+                "maxWidth": "50",
+                "showBorder": true
+              }
+            },
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "recoveryservicesresources\r\n                | where type in~ ('microsoft.recoveryservices/vaults/backupjobs')\r\n                //| where properties.dataSourceType in~ ('SQLDataBase','SAPHanaDatabase')\r\n                | extend vaultName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', properties.vaultName,\r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\r\n                | extend friendlyName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', strcat(properties.dataSourceSetName , '/', properties.dataSourceName),\r\n                                             type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', properties.entityFriendlyName, '--')\r\n                | extend workloadType = tostring(case (isnotnull(properties.workloadType), properties.workloadType, properties.backupManagementType == 'AzureIaasVM', 'VM',\r\n                                                                 properties.backupManagementType == 'AzureStorage', 'AzureFileShare','--'))\r\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' ,strcat(properties.backupManagementType,'/',workloadType),\r\n                                               type =~ 'microsoft.dataprotection/backupVaults/backupJobs',properties.dataSourceType,'--')\r\n                | extend ErrorDescription = properties.errorDetails \r\n                | extend backupInstanceName = properties.backupInstanceId\r\n                | extend dsResourceGroup = split(split(properties.dataSourceId, '/resourceGroups/')[1],'/')[0]\r\n                | extend dsSubscription = split(split(properties.dataSourceId, '/subscriptions/')[1],'/')[0]\r\n                | extend status = properties.status\r\n                | extend dataSourceId = properties.dataSourceId\r\n                | extend resourceId = tolower(dataSourceId)\r\n                | extend primaryLocation = properties.dataSourceLocation\r\n                | extend jobStatus = case (properties.status == 'Completed' or properties.status == 'CompletedWithWarnings','Succeeded',\r\n                                           properties.status == 'Failed','Failed',properties.status == 'InProgress', 'Started', properties.status)\r\n                | extend operation = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs' and tolower(properties.operationCategory) startswith 'backup' and properties.isUserTriggered == 'true',\r\n                                          strcat('adhoc',properties.operationCategory),type =~ 'microsoft.dataprotection/backupVaults/backupJobs', tolower(properties.operationCategory),\r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' and tolower(properties.operation) startswith 'backup' and properties.isUserTriggered == 'true',strcat('adhoc',properties.operation),\r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs',tolower(properties.operation), '--')\r\n                | extend STime = todatetime(properties.startTime), ETime = todatetime(properties.endTime), duration = properties.duration\r\n                | where (dataSourceType in~ ('AzureWorkload/SQLDataBase','AzureWorkload/SAPHanaDatabase')) and (status in~ ('Started','InProgress','Succeeded','Completed','Failed','CompletedWithWarnings')) and ((ErrorDescription !contains \"Log chain is broken.\") and (ErrorDescription !contains \"Log Chain is broken.\") and (ErrorDescription !contains \"First full backup is missing for this datasource\")  and (ErrorDescription !contains \"Operation cancelled as a conflicting operation was already running on the same datasource\") and (ErrorDescription !contains \"Backup failed because a remedial backup is in progress for this datasource. Backups on this datasource will not succeed until the remedial backup is complete\"))\r\n                | where operation !contains \"adhoc\"\r\n                | where STime > ago(1d)\r\n                | summarize Total=count(status) by Scheduled = tostring(properties.status)\r\n                //| project Status = properties.status",
+                      "size": 4,
+                      "title": "Scheduled",
+                      "queryType": 1,
+                      "resourceType": "microsoft.resourcegraph/resources",
+                      "crossComponentResources": [
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79"
+                      ],
+                      "visualization": "table",
+                      "gridSettings": {
+                        "formatters": [
+                          {
+                            "columnMatch": "Scheduled",
+                            "formatter": 18,
+                            "formatOptions": {
+                              "thresholdsOptions": "icons",
+                              "thresholdsGrid": [
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Failed",
+                                  "representation": "3",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Completed",
+                                  "representation": "success",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Progress",
+                                  "representation": "pending",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Warning",
+                                  "representation": "2",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Started",
+                                  "representation": "info",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Succeeded",
+                                  "representation": "1",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "Default",
+                                  "thresholdValue": null,
+                                  "representation": "success",
+                                  "text": "{0}{1}"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "tileSettings": {
+                        "titleContent": {
+                          "columnMatch": "Total",
+                          "formatter": 12,
+                          "formatOptions": {
+                            "palette": "none"
+                          }
+                        },
+                        "leftContent": {
+                          "columnMatch": "Status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "contains",
+                                "thresholdValue": "InProgress",
+                                "representation": "pending",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "contains",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "contains",
+                                "thresholdValue": "Completed",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          },
+                          "numberFormat": {
+                            "unit": 17,
+                            "options": {
+                              "style": "decimal",
+                              "maximumFractionDigits": 2,
+                              "maximumSignificantDigits": 3
+                            }
+                          }
+                        },
+                        "showBorder": true,
+                        "size": "auto"
+                      },
+                      "chartSettings": {
+                        "seriesLabelSettings": [
+                          {
+                            "seriesName": "Completed",
+                            "color": "greenDarkDark"
+                          },
+                          {
+                            "seriesName": "Failed",
+                            "color": "redBright"
+                          }
+                        ]
+                      }
+                    },
+                    "customWidth": "20",
+                    "conditionalVisibility": {
+                      "parameterName": "sql",
+                      "comparison": "isEqualTo",
+                      "value": "n"
+                    },
+                    "showPin": true,
+                    "name": "query - 0",
+                    "styleSettings": {
+                      "showBorder": true
+                    }
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "recoveryservicesresources\r\n                | where type in~ ('microsoft.recoveryservices/vaults/backupjobs')\r\n                //| where properties.dataSourceType in~ ('SQLDataBase','SAPHanaDatabase')\r\n                | extend vaultName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', properties.vaultName,\r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\r\n                | extend friendlyName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', strcat(properties.dataSourceSetName , '/', properties.dataSourceName),\r\n                                             type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', properties.entityFriendlyName, '--')\r\n                | extend workloadType = tostring(case (isnotnull(properties.workloadType), properties.workloadType, properties.backupManagementType == 'AzureIaasVM', 'VM',\r\n                                                                 properties.backupManagementType == 'AzureStorage', 'AzureFileShare','--'))\r\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' ,strcat(properties.backupManagementType,'/',workloadType),\r\n                                               type =~ 'microsoft.dataprotection/backupVaults/backupJobs',properties.dataSourceType,'--')\r\n                | extend ErrorDescription = properties.errorDetails \r\n                | extend backupInstanceName = properties.backupInstanceId\r\n                | extend dsResourceGroup = split(split(properties.dataSourceId, '/resourceGroups/')[1],'/')[0]\r\n                | extend dsSubscription = split(split(properties.dataSourceId, '/subscriptions/')[1],'/')[0]\r\n                | extend status = properties.status\r\n                | extend dataSourceId = properties.dataSourceId\r\n                | extend resourceId = tolower(dataSourceId)\r\n                | extend primaryLocation = properties.dataSourceLocation\r\n                | extend jobStatus = case (properties.status == 'Completed' or properties.status == 'CompletedWithWarnings','Succeeded',\r\n                                           properties.status == 'Failed','Failed',properties.status == 'InProgress', 'Started', properties.status)\r\n                | extend operation = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs' and tolower(properties.operationCategory) startswith 'backup' and properties.isUserTriggered == 'true',\r\n                                          strcat('adhoc',properties.operationCategory),type =~ 'microsoft.dataprotection/backupVaults/backupJobs', tolower(properties.operationCategory),\r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' and tolower(properties.operation) startswith 'backup' and properties.isUserTriggered == 'true',strcat('adhoc',properties.operation),\r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs',tolower(properties.operation), '--')\r\n                | extend STime = todatetime(properties.startTime), ETime = todatetime(properties.endTime), duration = properties.duration\r\n                | where (dataSourceType in~ ('AzureWorkload/SQLDataBase','AzureWorkload/SAPHanaDatabase')) and (status in~ ('Started','InProgress','Succeeded','Completed','Failed','CompletedWithWarnings')) and ((ErrorDescription !contains \"Log chain is broken.\") and (ErrorDescription !contains \"Log Chain is broken.\") and (ErrorDescription !contains \"First full backup is missing for this datasource\")  and (ErrorDescription !contains \"Operation cancelled as a conflicting operation was already running on the same datasource\") and (ErrorDescription !contains \"Backup failed because a remedial backup is in progress for this datasource. Backups on this datasource will not succeed until the remedial backup is complete\"))\r\n                | where operation contains \"adhoc\"\r\n                | where STime > ago(1d)\r\n                | summarize Total=count(status) by Adhoc = tostring(properties.status)\r\n                //| project Status = properties.status",
+                      "size": 4,
+                      "title": "Adhoc",
+                      "noDataMessage": "No manual backups triggered.",
+                      "queryType": 1,
+                      "resourceType": "microsoft.resourcegraph/resources",
+                      "crossComponentResources": [
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                      ],
+                      "visualization": "table",
+                      "gridSettings": {
+                        "formatters": [
+                          {
+                            "columnMatch": "Adhoc",
+                            "formatter": 18,
+                            "formatOptions": {
+                              "thresholdsOptions": "icons",
+                              "thresholdsGrid": [
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Fail",
+                                  "representation": "3",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Complete",
+                                  "representation": "success",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Progress",
+                                  "representation": "pending",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "Default",
+                                  "thresholdValue": null,
+                                  "representation": "success",
+                                  "text": "{0}{1}"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "tileSettings": {
+                        "titleContent": {
+                          "columnMatch": "Total",
+                          "formatter": 12,
+                          "formatOptions": {
+                            "palette": "none"
+                          }
+                        },
+                        "leftContent": {
+                          "columnMatch": "Status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "contains",
+                                "thresholdValue": "InProgress",
+                                "representation": "pending",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "contains",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "contains",
+                                "thresholdValue": "Completed",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          },
+                          "numberFormat": {
+                            "unit": 17,
+                            "options": {
+                              "style": "decimal",
+                              "maximumFractionDigits": 2,
+                              "maximumSignificantDigits": 3
+                            }
+                          }
+                        },
+                        "showBorder": true,
+                        "size": "auto"
+                      },
+                      "chartSettings": {
+                        "seriesLabelSettings": [
+                          {
+                            "seriesName": "Completed",
+                            "color": "greenDarkDark"
+                          },
+                          {
+                            "seriesName": "Failed",
+                            "color": "redBright"
+                          }
+                        ]
+                      }
+                    },
+                    "customWidth": "20",
+                    "conditionalVisibility": {
+                      "parameterName": "sql",
+                      "comparison": "isEqualTo",
+                      "value": "No"
+                    },
+                    "showPin": true,
+                    "name": "query - 0 - Copy",
+                    "styleSettings": {
+                      "showBorder": true
+                    }
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "recoveryservicesresources\r\n                | where type in~ ('microsoft.recoveryservices/vaults/backupjobs')\r\n                //| where properties.dataSourceType in~ ('SQLDataBase','SAPHanaDatabase')\r\n                | extend vaultName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', properties.vaultName,\r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\r\n                | extend friendlyName = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs', strcat(properties.dataSourceSetName , '/', properties.dataSourceName),\r\n                                             type =~ 'Microsoft.RecoveryServices/vaults/backupJobs', properties.entityFriendlyName, '--')\r\n                | extend workloadType = tostring(case (isnotnull(properties.workloadType), properties.workloadType, properties.backupManagementType == 'AzureIaasVM', 'VM',\r\n                                                                 properties.backupManagementType == 'AzureStorage', 'AzureFileShare','--'))\r\n                | extend DataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' ,strcat(properties.backupManagementType,'/',workloadType),\r\n                                               type =~ 'microsoft.dataprotection/backupVaults/backupJobs',properties.dataSourceType,'--')\r\n                | extend ErrorDescription = properties.errorDetails                     \r\n                | extend backupInstanceName = properties.backupInstanceId\r\n                | extend dsResourceGroup = split(split(properties.dataSourceId, '/resourceGroups/')[1],'/')[0]\r\n                | extend dsSubscription = split(split(properties.dataSourceId, '/subscriptions/')[1],'/')[0]\r\n                | extend Status = properties.status\r\n                | extend dataSourceId = properties.dataSourceId\r\n                | extend resourceId = tolower(dataSourceId)\r\n                | extend primaryLocation = properties.dataSourceLocation\r\n                | extend jobStatus = case (properties.status == 'Completed' or properties.status == 'CompletedWithWarnings','Succeeded',\r\n                                           properties.status == 'Failed','Failed',properties.status == 'InProgress', 'Started', properties.status)\r\n                | extend Operation = case(type =~ 'microsoft.dataprotection/backupVaults/backupJobs' and tolower(properties.operationCategory) startswith 'backup' and properties.isUserTriggered == 'true',\r\n                                          strcat('adhoc',properties.operationCategory),type =~ 'microsoft.dataprotection/backupVaults/backupJobs', tolower(properties.operationCategory),\r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs' and tolower(properties.operation) startswith 'backup' and properties.isUserTriggered == 'true',strcat('adhoc',properties.operation), \r\n                                          type =~ 'Microsoft.RecoveryServices/vaults/backupJobs',tolower(properties.operation), '--')\r\n                | extend StartDate = todatetime(properties.startTime), EndDate = todatetime(properties.endTime), Duration = properties.duration\r\n                | where (DataSourceType in~ ('AzureWorkload/SQLDataBase','AzureWorkload/SAPHanaDatabase')) and (Status in~ ('Started','InProgress','Succeeded','Completed','Failed','CompletedWithWarnings')) \r\n                //| where STime > ago(1d)\r\n                //| summarize Total=count(status) by Status = tostring(properties.status)\r\n                | project resourceId, BackupItems = friendlyName, DataSourceType, Status, Operation, ErrorDescription, StartDate, EndDate, Duration //dsResourceGroup,\r\n                | sort by StartDate desc\r\n             ",
+                      "size": 0,
+                      "title": "Backup Jobs",
+                      "showRefreshButton": true,
+                      "queryType": 1,
+                      "resourceType": "microsoft.resourcegraph/resources",
+                      "crossComponentResources": [
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                      ],
+                      "gridSettings": {
+                        "rowLimit": 2000,
+                        "filter": true
+                      }
+                    },
+                    "customWidth": "100",
+                    "showPin": false,
+                    "name": "Backup Jobs",
+                    "styleSettings": {
+                      "padding": "100",
+                      "maxWidth": "100",
+                      "showBorder": true
+                    }
+                  }
+                ]
+              },
+              "customWidth": "100",
+              "name": "Health Status",
+              "styleSettings": {
+                "showBorder": true
+              }
+            },
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "RecoveryServicesResources\r\n                | where type in~ ('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems')\r\n                | extend policy = properties.policyInfo.policyId\r\n                | extend vaultName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),split(split(id, '/Microsoft.DataProtection/          backupVaults/')[1],'/')[0],type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\r\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',strcat(properties.backupManagementType,'/',properties.workloadType),type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),properties.dataSourceInfo.datasourceType,'--')\r\n                | extend DatabaseName = properties.friendlyName| extend dsResourceGroup = split(split(properties.dataSourceInfo.resourceID, '/resourceGroups/')[1],'/')[0]\r\n                | extend dsSubscription = split(split(properties.dataSourceInfo.resourceID, '/subscriptions/')[1],'/')[0]\r\n                | extend lastRestorePoint = properties.lastRecoveryPoint\r\n                | extend primaryLocation = properties.dataSourceInfo.resourceLocation\r\n                | extend InstanceOrAOAG = case(isnotnull(properties.serverName),strcat(properties.serverName,'/', properties.parentName), 'NA')\r\n                | extend policyName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'), extract(@'([^/]*)/backupPolicies/([^/]*)', 2, tostring(policy)),type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', properties.policyInfo.name,'--')\r\n                | extend Status = case(properties.currentProtectionState =~ \"ProtectionStopped\", 'Stopped',\r\n                                    properties.currentProtectionState =~ \"ProtectionConfigured\", 'Configured',\r\n                                    properties.currentProtectionState =~ \"ConfiguringProtectionFailed\", 'Failed',\r\n                                    properties.currentProtectionState =~ \"ConfiguringProtection\", 'Configuring',\r\n                                    properties.currentProtectionState =~ \"BackupsSuspended\", 'Suspended',\r\n                                    properties.currentProtectionState =~ \"SoftDeleted\", 'Deleted',\r\n                                    properties.currentProtectionState =~ \"ProtectionError\", 'Error',\r\n                                    \"--\")\r\n                //| extend ProtectionState = case(properties.currentProtectionState =~ \"ProtectionStopped\", 'Stopped',\r\n                //                    properties.currentProtectionState =~ \"ProtectionConfigured\", 'Configured',\r\n                //                    \"--\")\r\n                | extend Subscription = case(subscriptionId =~ \"2df031a7-e21f-49c7-b61e-b0bb3e097c79\", 'vestas-sap-ea-westeurope-dev-01',\r\n                                    subscriptionId =~ \"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\", 'vestas-sap-ea-westeurope-prd-01',\r\n                                    subscriptionId =~ \"cbb944ea-aa79-4701-909a-e114ab57ad7a\", 'vestas-sap-ea-westeurope-tst-01',\r\n                                    \"--\")\r\n                | extend DBType = case(InstanceOrAOAG contains \"AG.\", 'Always on AG',\r\n                                    (InstanceOrAOAG contains \"DB\") or (InstanceOrAOAG contains \"azsapd003\") or (InstanceOrAOAG contains \"azsapd007\") or (InstanceOrAOAG contains \"azsapddb04\") or (InstanceOrAOAG contains \"azsapddb07\") or (InstanceOrAOAG contains \"azsapd035\") or (InstanceOrAOAG contains \"azsapd039\") or (InstanceOrAOAG contains \"azsapd041\"), 'Standalone Instance',\r\n                                    \"--\")\r\n               // | extend DBType = case(isnull(dsResourceGroup), 'Always on AG',\r\n               //                     isnotnull(dsResourceGroup), 'Standalone Instance',\r\n               //                     \"--\")\r\n               //| where (Status in~ ('Configured','Stopped')\r\n               | where dataSourceType in~ ('AzureWorkload/SQLDataBase')\r\n               | project DatabaseName, InstanceOrAOAG, DBType, Status, policyName, dsResourceGroup, Subscription //, dataSourceType\r\n                //| project id, name,type, resourceGroup, vaultName, DatabaseName, InstanceOrAOAG, Subscription, dataSourceType, protectionState, policyName, primaryLocation, lastRestorePoint, properties, dsResourceGroup, dsSubscription, location\r\n                | summarize Total=count(InstanceOrAOAG) by tostring(Status) //= tostring(properties.currentProtectionState)",
+                      "size": 4,
+                      "title": "SQL Backup Instance",
+                      "queryType": 1,
+                      "resourceType": "microsoft.resourcegraph/resources",
+                      "crossComponentResources": [
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79"
+                      ],
+                      "gridSettings": {
+                        "formatters": [
+                          {
+                            "columnMatch": "Status",
+                            "formatter": 18,
+                            "formatOptions": {
+                              "thresholdsOptions": "icons",
+                              "thresholdsGrid": [
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Stopped",
+                                  "representation": "disabled",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Configured",
+                                  "representation": "success",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Failed",
+                                  "representation": "4",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Configuring",
+                                  "representation": "pending",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Suspended",
+                                  "representation": "warning",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Deleted",
+                                  "representation": "Cancelled",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Error",
+                                  "representation": "error",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "Default",
+                                  "thresholdValue": null,
+                                  "representation": "success",
+                                  "text": "{0}{1}"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "customWidth": "20",
+                    "conditionalVisibility": {
+                      "parameterName": "sql",
+                      "comparison": "isEqualTo",
+                      "value": "n"
+                    },
+                    "showPin": true,
+                    "name": "Backup Instance",
+                    "styleSettings": {
+                      "margin": "0",
+                      "padding": "0",
+                      "showBorder": true
+                    }
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "RecoveryServicesResources\r\n                | where type in~ ('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems')\r\n                | extend policy = properties.policyInfo.policyId\r\n                | extend vaultName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),split(split(id, '/Microsoft.DataProtection/          backupVaults/')[1],'/')[0],type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\r\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',strcat(properties.backupManagementType,'/',properties.workloadType),type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),properties.dataSourceInfo.datasourceType,'--')\r\n                | extend DatabaseName = properties.friendlyName| extend dsResourceGroup = split(split(properties.dataSourceInfo.resourceID, '/resourceGroups/')[1],'/')[0]\r\n                | extend dsSubscription = split(split(properties.dataSourceInfo.resourceID, '/subscriptions/')[1],'/')[0]\r\n                | extend lastRestorePoint = properties.lastRecoveryPoint\r\n                | extend primaryLocation = properties.dataSourceInfo.resourceLocation\r\n                | extend InstanceOrAOAG = case(isnotnull(properties.serverName),strcat(properties.serverName,'/', properties.parentName), 'NA')\r\n                | extend policyName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'), extract(@'([^/]*)/backupPolicies/([^/]*)', 2, tostring(policy)),type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', properties.policyInfo.name,'--')\r\n                | extend protectionState = properties.currentProtectionState\r\n                | extend Subscription = case(subscriptionId =~ \"2df031a7-e21f-49c7-b61e-b0bb3e097c79\", 'vestas-sap-ea-westeurope-dev-01',\r\n                                    subscriptionId =~ \"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\", 'vestas-sap-ea-westeurope-prd-01',\r\n                                    subscriptionId =~ \"cbb944ea-aa79-4701-909a-e114ab57ad7a\", 'vestas-sap-ea-westeurope-tst-01',\r\n                                    \"--\")\r\n                  | extend DBType = case(InstanceOrAOAG contains \"AG.\", 'Always on AG',\r\n                                    (InstanceOrAOAG contains \"DB\") or (InstanceOrAOAG contains \"azsapd003\") or (InstanceOrAOAG contains \"azsapd007\") or (InstanceOrAOAG contains \"azsapddb04\") or (InstanceOrAOAG contains \"azsapddb07\") or (InstanceOrAOAG contains \"azsapd035\"), 'Standalone Instance',\r\n                                    \"--\")\r\n               // | extend DBType = case(isnull(dsResourceGroup), 'Always on AG',\r\n               //                     isnotnull(dsResourceGroup), 'Standalone Instance',\r\n               //                     \"--\")\r\n                | where (protectionState in~ ('ConfiguringProtection','ProtectionConfigured','ConfiguringProtectionFailed','ProtectionStopped','BackupsSuspended','SoftDeleted','ProtectionError')) and (dataSourceType in~ ('AzureWorkload/SQLDataBase'))\r\n                | project DatabaseName, InstanceOrAOAG, DBType, protectionState, policyName, dsResourceGroup, Subscription, properties.lastBackupTime  //, dataSourceType,lastRestorePoint,\r\n                //| project id, name,type, resourceGroup, vaultName, DatabaseName, InstanceOrAOAG, Subscription, dataSourceType, protectionState, policyName, primaryLocation, lastRestorePoint, properties, dsResourceGroup, dsSubscription, location\r\n                | sort by tostring(protectionState)",
+                      "size": 0,
+                      "title": "SQL Protection Status",
+                      "showRefreshButton": true,
+                      "showExportToExcel": true,
+                      "queryType": 1,
+                      "resourceType": "microsoft.resourcegraph/resources",
+                      "crossComponentResources": [
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79"
+                      ],
+                      "gridSettings": {
+                        "filter": true
+                      }
+                    },
+                    "customWidth": "80",
+                    "name": "query - 4",
+                    "styleSettings": {
+                      "showBorder": true
+                    }
+                  }
+                ]
+              },
+              "name": "SQL Protection State"
+            },
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "RecoveryServicesResources\r\n                | where type in~ ('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems')\r\n                |extend policy = properties.policyInfo.policyId| extend vaultName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),split(split(id, '/Microsoft.DataProtection/backupVaults/')[1],'/')[0],type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\r\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',strcat(properties.backupManagementType,'/',properties.workloadType),type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),properties.dataSourceInfo.datasourceType,'--')\r\n                | extend DatabaseName = properties.friendlyName\r\n                | extend dsResourceGroup = split(split(properties.dataSourceInfo.resourceID, '/resourceGroups/')[1],'/')[0]\r\n                | extend dsSubscription = split(split(properties.dataSourceInfo.resourceID, '/subscriptions/')[1],'/')[0]\r\n                | extend lastRestorePoint = properties.lastRecoveryPoint\r\n                | extend primaryLocation = properties.dataSourceInfo.resourceLocation\r\n                | extend instanceName = case(isnotnull(properties.serverName),strcat(properties.serverName,'/', properties.parentName), 'NA')\r\n                | extend policyName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'), extract(@'([^/]*)/backupPolicies/([^/]*)', 2, tostring(policy)),type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', properties.policyInfo.name,'--')\r\n                  | extend Status = case(properties.currentProtectionState =~ \"ProtectionStopped\", 'Stopped',\r\n                                    properties.currentProtectionState =~ \"ProtectionConfigured\", 'Configured',\r\n                                    properties.currentProtectionState =~ \"ConfiguringProtectionFailed\", 'Failed',\r\n                                    properties.currentProtectionState =~ \"ConfiguringProtection\", 'Configuring',\r\n                                    properties.currentProtectionState =~ \"BackupsSuspended\", 'Suspended',\r\n                                    properties.currentProtectionState =~ \"SoftDeleted\", 'Deleted',\r\n                                    properties.currentProtectionState =~ \"ProtectionError\", 'Error',\r\n                                    \"--\")\r\n                | extend Subscription = case(subscriptionId =~ \"2df031a7-e21f-49c7-b61e-b0bb3e097c79\", 'vestas-sap-ea-westeurope-dev-01',\r\n                                    subscriptionId =~ \"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\", 'vestas-sap-ea-westeurope-prd-01',\r\n                                    subscriptionId =~ \"cbb944ea-aa79-4701-909a-e114ab57ad7a\", 'vestas-sap-ea-westeurope-tst-01',\r\n                                    \"--\")\r\n                | where dataSourceType in~ ('AzureWorkload/SAPHanaDatabase','AzureWorkload/SAPHanaDBInstance')\r\n                | project DatabaseName, instanceName, Status, policyName, dsResourceGroup, Subscription\r\n                //| project id, name,type, resourceGroup, vaultName, friendlyName, instanceName, subscriptionId, dataSourceType, protectionState, policyName, primaryLocation, lastRestorePoint, properties, dsResourceGroup, dsSubscription, location\r\n                | summarize Total=count(DatabaseName) by tostring(Status)",
+                      "size": 4,
+                      "title": "SAP HANA Backup Instance",
+                      "queryType": 1,
+                      "resourceType": "microsoft.resourcegraph/resources",
+                      "crossComponentResources": [
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a"
+                      ],
+                      "gridSettings": {
+                        "formatters": [
+                          {
+                            "columnMatch": "Status",
+                            "formatter": 18,
+                            "formatOptions": {
+                              "thresholdsOptions": "icons",
+                              "thresholdsGrid": [
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Stopped",
+                                  "representation": "disabled",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Configured",
+                                  "representation": "success",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Failed",
+                                  "representation": "4",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Configuring",
+                                  "representation": "pending",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Suspended",
+                                  "representation": "2",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Deleted",
+                                  "representation": "Disable",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "contains",
+                                  "thresholdValue": "Error",
+                                  "representation": "error",
+                                  "text": "{0}{1}"
+                                },
+                                {
+                                  "operator": "Default",
+                                  "thresholdValue": null,
+                                  "representation": "success",
+                                  "text": "{0}{1}"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "customWidth": "20",
+                    "conditionalVisibility": {
+                      "parameterName": "sap",
+                      "comparison": "isEqualTo",
+                      "value": "n"
+                    },
+                    "showPin": true,
+                    "name": "query - 1",
+                    "styleSettings": {
+                      "showBorder": true
+                    }
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "RecoveryServicesResources\r\n                | where type in~ ('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems')\r\n                |extend policy = properties.policyInfo.policyId| extend vaultName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),split(split(id, '/Microsoft.DataProtection/backupVaults/')[1],'/')[0],type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',split(split(id, '/Microsoft.RecoveryServices/vaults/')[1],'/')[0],'--')\r\n                | extend dataSourceType = case(type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems',strcat(properties.backupManagementType,'/',properties.workloadType),type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'),properties.dataSourceInfo.datasourceType,'--')\r\n                | extend DatabaseName = properties.friendlyName\r\n                | extend dsResourceGroup = split(split(properties.dataSourceInfo.resourceID, '/resourceGroups/')[1],'/')[0]\r\n                | extend dsSubscription = split(split(properties.dataSourceInfo.resourceID, '/subscriptions/')[1],'/')[0]\r\n                | extend lastRestorePoint = properties.lastRecoveryPoint\r\n                | extend primaryLocation = properties.dataSourceInfo.resourceLocation\r\n                | extend instanceName = case(isnotnull(properties.serverName),strcat(properties.serverName,'/', properties.parentName), 'NA')\r\n                | extend policyName = case(type in~ ('microsoft.dataprotection/backupVaults/backupInstances', 'microsoft.dataprotection/backupVaults/deletedBackupInstances'), extract(@'([^/]*)/backupPolicies/([^/]*)', 2, tostring(policy)),type =~ 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', properties.policyInfo.name,'--')\r\n                | extend protectionState = properties.currentProtectionState\r\n                | extend Subscription = case(subscriptionId =~ \"2df031a7-e21f-49c7-b61e-b0bb3e097c79\", 'vestas-sap-ea-westeurope-dev-01',\r\n                                    subscriptionId =~ \"3a8032ca-dc2c-4137-9f64-f8daaa55c78d\", 'vestas-sap-ea-westeurope-prd-01',\r\n                                    subscriptionId =~ \"cbb944ea-aa79-4701-909a-e114ab57ad7a\", 'vestas-sap-ea-westeurope-tst-01',\r\n                                    \"--\")\r\n                | where (protectionState in~ ('ConfiguringProtection','ProtectionConfigured','ConfiguringProtectionFailed','ProtectionStopped','BackupsSuspended','SoftDeleted','ProtectionError')) and (dataSourceType in~ ('AzureWorkload/SAPHanaDatabase','AzureWorkload/SAPHanaDBInstance'))\r\n                | project DatabaseName, instanceName, protectionState, policyName, dsResourceGroup, Subscription\r\n                //| project id, name,type, resourceGroup, vaultName, friendlyName, instanceName, subscriptionId, dataSourceType, protectionState, policyName, primaryLocation, lastRestorePoint, properties, dsResourceGroup, dsSubscription, location\r\n                | sort by tostring(protectionState)",
+                      "size": 0,
+                      "title": "SAP HANA Protection Status",
+                      "showRefreshButton": true,
+                      "showExportToExcel": true,
+                      "queryType": 1,
+                      "resourceType": "microsoft.resourcegraph/resources",
+                      "crossComponentResources": [
+                        "/subscriptions/cbb944ea-aa79-4701-909a-e114ab57ad7a",
+                        "/subscriptions/3a8032ca-dc2c-4137-9f64-f8daaa55c78d",
+                        "/subscriptions/2df031a7-e21f-49c7-b61e-b0bb3e097c79"
+                      ],
+                      "gridSettings": {
+                        "filter": true
+                      }
+                    },
+                    "customWidth": "60",
+                    "name": "query - 0",
+                    "styleSettings": {
+                      "showBorder": true
+                    }
+                  }
+                ]
+              },
+              "name": "group - 4"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "backup"
+        },
+        "name": "SQL Backup Health Summary"
+      }
+    ]
+  },
+  "name": "Database Backup Status"
+}
